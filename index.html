@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFB-Pokal 2026/27</title>
+    <!-- Homescreen-Icon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%231d4ed8%22/><text x=%2250%22 y=%2263%22 font-size=%2228%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>POKAL</text></svg>">
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #070b19;
+            --card-bg: #0f172a;
+            --card-inner: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --pokal-blue: #1d4ed8;
+            --pokal-blue-hover: #1e40af;
+            --pokal-bright: #3b82f6;
+            --accent-gold: #f59e0b;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Pokalsieger-Bild als Banner über der Überschrift */
+        .header-banner-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .header-banner-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        .header-title-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 0;
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+        h2 span {
+            color: var(--pokal-bright);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .meta-info {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .supabase-badge {
+            color: #60a5fa;
+            background: rgba(30, 64, 175, 0.25);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-weight: 600;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .live-badge {
+            display: none;
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.15);
+            padding: 3px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            font-weight: bold;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            animation: pulse-red 1.2s infinite;
+        }
+
+        /* ROUND TABS */
+        .rounds-nav {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .round-btn {
+            background: var(--card-inner);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .round-btn:hover {
+            background: #2563eb33;
+            color: #ffffff;
+            border-color: var(--pokal-bright);
+        }
+        .round-btn.active {
+            background: var(--pokal-blue);
+            color: #ffffff;
+            border-color: var(--pokal-bright);
+            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .section-box {
+            background: var(--card-inner);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            background-color: var(--pokal-blue);
+            color: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-action-btn {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .header-action-btn:hover { background: rgba(0, 0, 0, 0.4); }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+        th {
+            background-color: #0b1329;
+            color: #ffffff;
+            padding: 10px 8px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border-bottom: 2px solid var(--pokal-blue);
+        }
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+        tr:hover { background-color: rgba(59, 130, 246, 0.05); }
+
+        .team-cell-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .team-winner {
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            font-weight: bold;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .team-mini-logo {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--pokal-bright);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            padding: 15px 20px;
+            background: #0b1329;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .modal-body {
+            padding: 15px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: #ffffff; }
+
+        /* Titelverteidiger Highlight */
+        .defending-champion {
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 4px solid var(--accent-gold);
+            font-weight: bold;
+            color: #fde047;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Pokalsieger-Bild als Banner über der Überschrift -->
+    <div class="header-banner-container">
+        <img src="https://lhusylpjnujlqomougmg.supabase.co/storage/v1/object/public/vereinslogos/pokalsieger.png" alt="Pokalsieger Banner" class="header-banner-img">
+    </div>
+
+    <div class="header-title-area">
+        <h2>DFB-<span>Pokal</span></h2>
+    </div>
+    <div class="subtitle">Saison 2026/27 — Live-Spielplan & Statistik</div>
+    
+    <div class="meta-info">
+        <span>⚡ Web-App & Management: Jürgen Schützendorf</span>
+        <span class="supabase-badge">● OpenLigaDB aktiv</span>
+        <div class="live-badge" id="liveIndicatorBadge"><span class="live-dot"></span> LIVE-SPIELE LÄUFT</div>
+    </div>
+
+    <!-- RUNDEN REGISTER (TABS) -->
+    <div class="rounds-nav" id="roundsNavContainer">
+        <button class="round-btn active" onclick="switchRound(1, this)">1. Hauptrunde</button>
+        <button class="round-btn" onclick="switchRound(2, this)">2. Hauptrunde</button>
+        <button class="round-btn" onclick="switchRound(3, this)">Achtelfinale</button>
+        <button class="round-btn" onclick="switchRound(4, this)">Viertelfinale</button>
+        <button class="round-btn" onclick="switchRound(5, this)">Halbfinale</button>
+        <button class="round-btn" onclick="switchRound(6, this)">Finale</button>
+    </div>
+
+    <!-- SPIELPLAN BOX -->
+    <div class="section-box">
+        <div class="section-header">
+            <span id="roundTableHeader">1. Hauptrunde — Spiele & Ergebnisse</span>
+            <div class="header-actions">
+                <button class="header-action-btn" onclick="openScorersModal()">⚽ Torschützen</button>
+                <button class="header-action-btn" onclick="openPastWinnersModal()">🏆 Alle Pokalsieger</button>
+                <button class="header-action-btn" onclick="loadPokalData(true)">🔄 Aktualisieren</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 130px; color: #ffffff;">Termin</th>
+                        <th style="text-align: right;">Heimmannschaft</th>
+                        <th style="text-align: center; width: 190px;">Ergebnis / Status</th>
+                        <th>Gastmannschaft</th>
+                    </tr>
+                </thead>
+                <tbody id="pokalMatchesBody">
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 25px;">Lade DFB-Pokal Spiele von OpenLigaDB...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- TORSCHÜTZEN MODAL -->
+<div class="modal-overlay" id="scorersModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin: 0; font-size: 1rem; color: var(--pokal-bright);">⚽ DFB-Pokal Torschützenliste</h3>
+            <button class="modal-close" onclick="closeModal('scorersModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px; text-align: center;">Pl.</th>
+                            <th>Spieler</th>
+                            <th style="text-align: center; width: 60px;">Tore</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scorersModalBody">
+                        <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">Lade Torschützen...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ALLE POKALSIEGER HISTORIE MODAL -->
+<div class="modal-overlay" id="pastWinnersModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 style="margin: 0; font-size: 1rem; color: var(--pokal-bright);">🏆 Alle DFB-Pokalsieger der Historie</h3>
+            <button class="modal-close" onclick="closeModal('pastWinnersModal')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 90px;">Saison</th>
+                            <th>Pokalsieger</th>
+                            <th>Finale / Ergebnis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="defending-champion">
+                            <td>2025/2026</td>
+                            <td>⭐ FC Bayern München <span style="font-size: 0.65rem; background: var(--accent-gold); color: #000; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">Titelverteidiger</span></td>
+                            <td>FC Bayern München - VfB Stuttgart 3:0</td>
+                        </tr>
+                        <tr><td>2024/2025</td><td>VfB Stuttgart</td><td>VfB Stuttgart - Arminia Bielefeld 4:2</td></tr>
+                        <tr><td>2023/2024</td><td>Bayer Leverkusen</td><td>Bayer Leverkusen - 1. FC Kaiserslautern 1:0</td></tr>
+                        <tr><td>2022/2023</td><td>RB Leipzig</td><td>RB Leipzig - Eintracht Frankfurt 2:0</td></tr>
+                        <tr><td>2021/2022</td><td>RB Leipzig</td><td>RB Leipzig - SC Freiburg 4:2 i.E. (1:1)</td></tr>
+                        <tr><td>2020/2021</td><td>Borussia Dortmund</td><td>Borussia Dortmund - RB Leipzig 4:1</td></tr>
+                        <tr><td>2019/2020</td><td>FC Bayern München</td><td>FC Bayern München - Bayer Leverkusen 4:2</td></tr>
+                        <tr><td>2018/2019</td><td>FC Bayern München</td><td>FC Bayern München - RB Leipzig 3:0</td></tr>
+                        <tr><td>2017/2018</td><td>Eintracht Frankfurt</td><td>Eintracht Frankfurt - FC Bayern München 3:1</td></tr>
+                        <tr><td>2016/2017</td><td>Borussia Dortmund</td><td>Borussia Dortmund - Eintracht Frankfurt 2:1</td></tr>
+                        <tr><td>2015/2016</td><td>FC Bayern München</td><td>FC Bayern München - Borussia Dortmund 4:3 i.E. (0:0)</td></tr>
+                        <tr><td>2014/2015</td><td>VfL Wolfsburg</td><td>VfL Wolfsburg - Borussia Dortmund 3:1</td></tr>
+                        <tr><td>2013/2014</td><td>FC Bayern München</td><td>Bayern München - Borussia Dortmund 2:0 n.V.</td></tr>
+                        <tr><td>2012/2013</td><td>FC Bayern München</td><td>Bayern München - VfB Stuttgart 3:2</td></tr>
+                        <tr><td>2011/2012</td><td>Borussia Dortmund</td><td>Borussia Dortmund - Bayern München 5:2</td></tr>
+                        <tr><td>2010/2011</td><td>FC Schalke 04</td><td>FC Schalke 04 - MSV Duisburg 5:0</td></tr>
+                        <tr><td>2009/2010</td><td>FC Bayern München</td><td>FC Bayern München - Werder Bremen 4:0</td></tr>
+                        <tr><td>2008/2009</td><td>Werder Bremen</td><td>Werder Bremen - Bayer Leverkusen 1:0</td></tr>
+                        <tr><td>2007/2008</td><td>FC Bayern München</td><td>FC Bayern München - Borussia Dortmund 2:1 n.V.</td></tr>
+                        <tr><td>2006/2007</td><td>1. FC Nürnberg</td><td>1. FC Nürnberg - VfB Stuttgart 3:2 n.V.</td></tr>
+                        <tr><td>2005/2006</td><td>FC Bayern München</td><td>Bayern München - Eintracht Frankfurt 1:0</td></tr>
+                        <tr><td>2004/2005</td><td>FC Bayern München</td><td>Bayern München - Schalke 04 2:1</td></tr>
+                        <tr><td>2003/2004</td><td>Werder Bremen</td><td>Werder Bremen - Alemannia Aachen 3:2</td></tr>
+                        <tr><td>2002/2003</td><td>FC Bayern München</td><td>FC Bayern München - 1. FC Kaiserslautern 3:1</td></tr>
+                        <tr><td>2001/2002</td><td>FC Schalke 04</td><td>FC Schalke 04 - Bayer Leverkusen 4:2</td></tr>
+                        <tr><td>2000/2001</td><td>FC Schalke 04</td><td>FC Schalke 04 - 1. FC Union Berlin 2:0</td></tr>
+                        <tr><td>1999/2000</td><td>FC Bayern München</td><td>FC Bayern München - SV Werder Bremen 3:0</td></tr>
+                        <tr><td>1998/1999</td><td>SV Werder Bremen</td><td>SV Werder Bremen - FC Bayern München 6:5 i.E. (1:1)</td></tr>
+                        <tr><td>1997/1998</td><td>FC Bayern München</td><td>FC Bayern München - MSV Duisburg 2:1</td></tr>
+                        <tr><td>1996/1997</td><td>VfB Stuttgart</td><td>VfB Stuttgart - FC Energie Cottbus 2:0</td></tr>
+                        <tr><td>1995/1996</td><td>1. FC Kaiserslautern</td><td>1. FC Kaiserslautern - Karlsruher SC 1:0</td></tr>
+                        <tr><td>1994/1995</td><td>Borussia Mönchengladbach</td><td>Borussia Mönchengladbach - VfL Wolfsburg 3:0</td></tr>
+                        <tr><td>1993/1994</td><td>SV Werder Bremen</td><td>SV Werder Bremen - Rot-Weiss Essen 3:1</td></tr>
+                        <tr><td>1992/1993</td><td>Bayer 04 Leverkusen</td><td>Bayer 04 Leverkusen - Hertha BSC Berlin II 1:0</td></tr>
+                        <tr><td>1991/1992</td><td>Hannoverscher SV 96</td><td>Hannoverscher SV 96 - Borussia Mönchengladbach 4:3 i.E. (0:0)</td></tr>
+                        <tr><td>1990/1991</td><td>SV Werder Bremen</td><td>SV Werder Bremen - 1. FC Köln 4:3 i.E. (1:1)</td></tr>
+                        <tr><td>1989/1990</td><td>1. FC Kaiserslautern</td><td>1. FC Kaiserslautern - Werder Bremen 3:2</td></tr>
+                        <tr><td>1988/1989</td><td>Borussia Dortmund</td><td>Borussia Dortmund - Werder Bremen 4:1</td></tr>
+                        <tr><td>1987/1988</td><td>Eintracht Frankfurt</td><td>Eintracht Frankfurt - VfL Bochum 1:0</td></tr>
+                        <tr><td>1986/1987</td><td>Hamburger SV</td><td>Hamburger SV - Stuttgarter Kickers 3:1</td></tr>
+                        <tr><td>1985/1986</td><td>FC Bayern München</td><td>FC Bayern München - VfB Stuttgart 5:2</td></tr>
+                        <tr><td>1984/1985</td><td>Bayer 05 Uerdingen</td><td>Bayer 05 Uerdingen - FC Bayern München 2:1</td></tr>
+                        <tr><td>1983/1984</td><td>FC Bayern München</td><td>FC Bayern München - Borussia Mönchengladbach 7:6 i.E. (1:1)</td></tr>
+                        <tr><td>1982/1983</td><td>1. FC Köln</td><td>1. FC Köln - Fortuna Köln 1:0</td></tr>
+                        <tr><td>1981/1982</td><td>FC Bayern München</td><td>FC Bayern München - 1. FC Nürnberg 4:2</td></tr>
+                        <tr><td>1980/1981</td><td>Eintracht Frankfurt</td><td>Eintracht Frankfurt - 1. FC Kaiserslautern 3:1</td></tr>
+                        <tr><td>1979/1980</td><td>Fortuna Düsseldorf</td><td>Fortuna Düsseldorf - 1. FC Köln 2:1 n.V.</td></tr>
+                        <tr><td>1978/1979</td><td>Fortuna Düsseldorf</td><td>Fortuna Düsseldorf - Hertha BSC 1:0 n.V.</td></tr>
+                        <tr><td>1977/1978</td><td>1. FC Köln</td><td>1. FC Köln - Fortuna Düsseldorf 2:0</td></tr>
+                        <tr><td>1976/1977</td><td>1. FC Köln</td><td>1. FC Köln - Hertha BSC 1:0 (Wdlg.)</td></tr>
+                        <tr><td>1975/1976</td><td>Hamburger SV</td><td>Hamburger SV - 1. FC Kaiserslautern 2:0</td></tr>
+                        <tr><td>1974/1975</td><td>Eintracht Frankfurt</td><td>Eintracht Frankfurt - MSV Duisburg 1:0</td></tr>
+                        <tr><td>1973/1974</td><td>Eintracht Frankfurt</td><td>Eintracht Frankfurt - Hamburger SV 3:1 n.V.</td></tr>
+                        <tr><td>1972/1973</td><td>Borussia Mönchengladbach</td><td>Borussia Mönchengladbach - 1. FC Köln 2:1 n.V.</td></tr>
+                        <tr><td>1971/1972</td><td>FC Schalke 04</td><td>FC Schalke 04 - 1. FC Kaiserslautern 5:0</td></tr>
+                        <tr><td>1970/1971</td><td>FC Bayern München</td><td>FC Bayern München - 1. FC Köln 2:1 n.V.</td></tr>
+                        <tr><td>1969/1970</td><td>Kickers Offenbach</td><td>Kickers Offenbach - 1. FC Köln 2:1</td></tr>
+                        <tr><td>1968/1969</td><td>FC Bayern München</td><td>FC Bayern München - FC Schalke 04 2:1</td></tr>
+                        <tr><td>1967/1968</td><td>1. FC Köln</td><td>1. FC Köln - VfL Bochum 4:1</td></tr>
+                        <tr><td>1966/1967</td><td>FC Bayern München</td><td>FC Bayern München - Hamburger SV 4:0</td></tr>
+                        <tr><td>1965/1966</td><td>FC Bayern München</td><td>FC Bayern München - MSV Duisburg 4:2</td></tr>
+                        <tr><td>1964/1965</td><td>Borussia Dortmund</td><td>Borussia Dortmund - Alemannia Aachen 2:0</td></tr>
+                        <tr><td>1963/1964</td><td>TSV 1860 München</td><td>TSV 1860 München - Eintracht Frankfurt 2:0</td></tr>
+                        <tr><td>1962/1963</td><td>Hamburger SV</td><td>Hamburger SV - Borussia Dortmund 3:0</td></tr>
+                        <tr><td>1961/1962</td><td>1. FC Nürnberg</td><td>1. FC Nürnberg - Fortuna Düsseldorf 2:1 n.V.</td></tr>
+                        <tr><td>1960/1961</td><td>SV Werder Bremen</td><td>SV Werder Bremen - 1. FC Kaiserslautern 2:0</td></tr>
+                        <tr><td>1959/1960</td><td>Borussia Mönchengladbach</td><td>Borussia Mönchengladbach - Karlsruher SC 3:2</td></tr>
+                        <tr><td>1958/1959</td><td>Schwarz-Weiß Essen</td><td>Schwarz-Weiß Essen - Borussia Neunkirchen 5:2</td></tr>
+                        <tr><td>1957/1958</td><td>VfB Stuttgart</td><td>VfB Stuttgart - Fortuna Düsseldorf 4:3 n.V.</td></tr>
+                        <tr><td>1956/1957</td><td>FC Bayern München</td><td>FC Bayern München - Fortuna Düsseldorf 1:0</td></tr>
+                        <tr><td>1955/1956</td><td>Karlsruher SC</td><td>Karlsruher SC - Hamburger SV 3:1</td></tr>
+                        <tr><td>1954/1955</td><td>Karlsruher SC</td><td>Karlsruher SC - FC Schalke 04 3:2</td></tr>
+                        <tr><td>1953/1954</td><td>VfB Stuttgart</td><td>VfB Stuttgart - 1. FC Köln 1:0 n.V.</td></tr>
+                        <tr><td>1952/1953</td><td>Rot-Weiss Essen</td><td>Rot-Weiss Essen - Alemannia Aachen 2:1</td></tr>
+                        <tr><td>1942/1943</td><td>First Vienna FC 1894</td><td>First Vienna FC - LSV Hamburg 3:2 n.V.</td></tr>
+                        <tr><td>1941/1942</td><td>TSV 1860 München</td><td>TSV 1860 München - FC Schalke 04 2:0</td></tr>
+                        <tr><td>1940/1941</td><td>Dresdner SC</td><td>Dresdner SC - FC Schalke 04 2:1</td></tr>
+                        <tr><td>1939/1940</td><td>Dresdner SC</td><td>Dresdner SC - 1. FC Nürnberg 2:1 n.V.</td></tr>
+                        <tr><td>1938/1939</td><td>1. FC Nürnberg</td><td>1. FC Nürnberg - SV Waldhof Mannheim 2:0</td></tr>
+                        <tr><td>1937/1938</td><td>SK Rapid Wien</td><td>SK Rapid Wien - FSV Frankfurt 3:1</td></tr>
+                        <tr><td>1936/1937</td><td>FC Schalke 04</td><td>FC Schalke 04 - Fortuna Düsseldorf 2:1</td></tr>
+                        <tr><td>1935/1936</td><td>VfB Leipzig</td><td>VfB Leipzig - FC Schalke 04 2:1</td></tr>
+                        <tr><td>1934/1935</td><td>1. FC Nürnberg</td><td>1. FC Nürnberg - FC Schalke 04 2:0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let teamLogos = {};
+    let pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+    let currentRoundId = 1;
+    let roundTitles = {
+        1: '1. Hauptrunde',
+        2: '2. Hauptrunde',
+        3: 'Achtelfinale',
+        4: 'Viertelfinale',
+        5: 'Halbfinale',
+        6: 'Finale'
+    };
+
+    async function loadPokalData(showAlert = false) {
+        try {
+            let response = await fetch('https://api.openligadb.de/getmatchdata/dfb/2026');
+            let data = await response.json();
+
+            pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+            let hasLiveMatches = false;
+
+            if (Array.isArray(data)) {
+                data.forEach(match => {
+                    if (match.team1 && match.team1.teamName && match.team1.teamIconUrl) {
+                        teamLogos[match.team1.teamName.trim().toLowerCase()] = match.team1.teamIconUrl;
+                    }
+                    if (match.team2 && match.team2.teamName && match.team2.teamIconUrl) {
+                        teamLogos[match.team2.teamName.trim().toLowerCase()] = match.team2.teamIconUrl;
+                    }
+
+                    let isCurrentlyLive = !match.matchIsFinished && match.matchResults && match.matchResults.length > 0;
+                    if (isCurrentlyLive) hasLiveMatches = true;
+
+                    let roundId = 1;
+                    if (match.group && match.group.groupOrderID) {
+                        roundId = match.group.groupOrderID;
+                    } else if (match.round && match.round.roundName) {
+                        let rName = match.round.roundName.toLowerCase();
+                        if (rName.includes('2') || rName.includes('zweite')) roundId = 2;
+                        else if (rName.includes('achtel')) roundId = 3;
+                        else if (rName.includes('viertel')) roundId = 4;
+                        else if (rName.includes('halb')) roundId = 5;
+                        else if (rName.includes('finale')) roundId = 6;
+                    }
+
+                    if (!pokalMatchesByRound[roundId]) {
+                        pokalMatchesByRound[roundId] = [];
+                    }
+
+                    let homeScore = null;
+                    let awayScore = null;
+                    let penInfo = "";
+
+                    if (match.matchResults && match.matchResults.length > 0) {
+                        let resPen = match.matchResults.find(r => r.resultTypeID === 3 || (r.resultDescription && r.resultDescription.toLowerCase().includes('elfmeter')));
+                        let resET = match.matchResults.find(r => r.resultTypeID === 4 || (r.resultDescription && r.resultDescription.toLowerCase().includes('verlängerung')));
+                        let resFinal = match.matchResults.find(r => r.resultTypeID === 2 || (r.resultDescription && r.resultDescription.toLowerCase().includes('endergebnis')));
+
+                        if (resPen) {
+                            homeScore = resPen.pointsTeam1;
+                            awayScore = resPen.pointsTeam2;
+                            penInfo = " (i.E.)";
+                        } else if (resET) {
+                            homeScore = resET.pointsTeam1;
+                            awayScore = resET.pointsTeam2;
+                            if (homeScore === awayScore && match.matchIsFinished) {
+                                let lastGoal = match.goals && match.goals.length > 0 ? match.goals[match.goals.length - 1] : null;
+                                if (lastGoal) {
+                                    let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
+                                    let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreGoal2;
+                                    if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
+                                        homeScore = hLast;
+                                        awayScore = aLast;
+                                        penInfo = " (i.E.)";
+                                    }
+                                }
+                            }
+                        } else if (resFinal) {
+                            homeScore = resFinal.pointsTeam1;
+                            awayScore = resFinal.pointsTeam2;
+                            if (homeScore === awayScore && match.matchIsFinished && match.goals && match.goals.length > 0) {
+                                let lastGoal = match.goals[match.goals.length - 1];
+                                let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
+                                let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreTeam2;
+                                if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
+                                    homeScore = hLast;
+                                    awayScore = aLast;
+                                    penInfo = (hLast + aLast > 6) ? " (i.E.)" : " n.V.";
+                                }
+                            }
+                        } else {
+                            let fallbackRes = match.matchResults[match.matchResults.length - 1];
+                            homeScore = fallbackRes.pointsTeam1;
+                            awayScore = fallbackRes.pointsTeam2;
+                        }
+                    }
+
+                    if (match.matchIsFinished && homeScore !== null && awayScore !== null && homeScore === awayScore) {
+                        let lastGoal = match.goals && match.goals.length > 0 ? match.goals[match.goals.length - 1] : null;
+                        if (lastGoal) {
+                            let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
+                            let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreGoal2;
+                            if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
+                                homeScore = hLast;
+                                awayScore = aLast;
+                                penInfo = " (i.E.)";
+                            }
+                        }
+                    }
+
+                    let apiScorers = [];
+                    if (match.goals && Array.isArray(match.goals)) {
+                        match.goals.forEach(goal => {
+                            let name = goal.goalGetterName;
+                            if (name) {
+                                let min = (goal.matchMinute !== null && goal.matchMinute !== undefined) ? goal.matchMinute + "'" : "";
+                                let hPts = (goal.scoreTeam1 !== null && goal.scoreTeam1 !== undefined) ? goal.scoreTeam1 : goal.scoreGoal1;
+                                let aPts = (goal.scoreTeam2 !== null && goal.scoreTeam2 !== undefined) ? goal.scoreTeam2 : goal.scoreGoal2;
+                                
+                                let scoreStr = (hPts !== undefined && aPts !== undefined) ? ` (${hPts}:${aPts})` : "";
+                                let minStr = min ? ` (${min})` : "";
+                                apiScorers.push(`⚽ ${name}${minStr}${scoreStr}`);
+                            }
+                        });
+                    }
+
+                    let matchDateObj = new Date(match.matchDateTime);
+                    let dateStr = match.matchDateTime ? match.matchDateTime.split('T')[0] : "";
+                    let timeStr = !isNaN(matchDateObj.getTime()) ? matchDateObj.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : "18:00";
+
+                    pokalMatchesByRound[roundId].push({
+                        home: match.team1.teamName,
+                        away: match.team2.teamName,
+                        date: dateStr,
+                        time: timeStr,
+                        homeScore: homeScore,
+                        awayScore: awayScore,
+                        penInfo: penInfo,
+                        isFinished: match.matchIsFinished,
+                        scorers: apiScorers.join('<br>')
+                    });
+                });
+            }
+
+            let liveBadge = document.getElementById('liveIndicatorBadge');
+            if (liveBadge) {
+                liveBadge.style.display = hasLiveMatches ? 'flex' : 'none';
+            }
+
+            if (showAlert) alert("DFB-Pokal Daten erfolgreich aktualisiert!");
+        } catch (e) {
+            console.error("Fehler beim Laden des DFB-Pokals:", e);
+            if (showAlert) alert("Fehler beim Abrufen der Daten.");
+        }
+
+        renderMatches();
+    }
+
+    function switchRound(roundId, btnElement) {
+        currentRoundId = roundId;
+        document.querySelectorAll('.round-btn').forEach(b => b.classList.remove('active'));
+        if (btnElement) btnElement.classList.add('active');
+        document.getElementById('roundTableHeader').textContent = (roundTitles[roundId] || 'Runde ' + roundId) + ' — Spiele & Ergebnisse';
+        renderMatches();
+    }
+
+    function getTeamHtml(teamName, isWinner, alignRight = false) {
+        let logoUrl = teamLogos[teamName.trim().toLowerCase()];
+        let logoHtml = logoUrl ? '<img src="' + logoUrl + '" alt="' + teamName + '" class="team-mini-logo">' : '';
+        let winnerClass = isWinner ? ' team-winner' : '';
+
+        if (alignRight) {
+            return '<div class="team-cell-content' + winnerClass + '" style="justify-content: flex-end;"><span>' + teamName + '</span>' + logoHtml + '</div>';
+        } else {
+            return '<div class="team-cell-content' + winnerClass + '">' + logoHtml + '<span>' + teamName + '</span></div>';
+        }
+    }
+
+    function renderMatches() {
+        let tbody = document.getElementById('pokalMatchesBody');
+        tbody.innerHTML = '';
+        let matches = pokalMatchesByRound[currentRoundId] || [];
+
+        if (matches.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 25px;">Für diese Runde sind noch keine Spiele angesetzt oder erfasst.</td></tr>';
+            return;
+        }
+
+        matches.forEach(m => {
+            let hasResult = m.homeScore !== undefined && m.homeScore !== null && m.awayScore !== undefined && m.awayScore !== null;
+            let formattedDate = m.date ? m.date.split('-').reverse().join('.') : '-';
+            let timeStr = m.time ? ' ' + m.time + ' Uhr' : '';
+
+            let isHomeWinner = hasResult && (m.homeScore > m.awayScore);
+            let isAwayWinner = hasResult && (m.awayScore > m.homeScore);
+
+            let resultDisplay = hasResult ? '<strong>' + m.homeScore + ':' + m.awayScore + (m.penInfo || '') + '</strong>' : '<span style="color: var(--text-muted); font-style: italic;">vs</span>';
+            if (hasResult && m.isFinished) {
+                resultDisplay += '<div style="font-size: 0.65rem; color: #60a5fa; margin-top: 2px;">(Endstand)</div>';
+            } else if (hasResult) {
+                resultDisplay += '<div style="font-size: 0.65rem; color: #ef4444; margin-top: 2px; font-weight: bold;">● (Live)</div>';
+            }
+
+            if (m.scorers && m.scorers.trim() !== "") {
+                resultDisplay += '<div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">' + m.scorers + '</div>';
+            }
+
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-size: 0.8rem; color: #ffffff; vertical-align: top;">${formattedDate}${timeStr}</td>
+                <td style="text-align: right; vertical-align: top;">${getTeamHtml(m.home, isHomeWinner, true)}</td>
+                <td style="text-align: center; vertical-align: top;">${resultDisplay}</td>
+                <td style="vertical-align: top;">${getTeamHtml(m.away, isAwayWinner, false)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openScorersModal() {
+        let tbody = document.getElementById('scorersModalBody');
+        tbody.innerHTML = '';
+        let scorersMap = {};
+
+        Object.values(pokalMatchesByRound).forEach(matchList => {
+            if (!Array.isArray(matchList)) return;
+            matchList.forEach(m => {
+                if (m.scorers && typeof m.scorers === 'string') {
+                    let lines = m.scorers.split('<br>');
+                    lines.forEach(line => {
+                        let cleanLine = line.replace('⚽', '').trim();
+                        if (!cleanLine) return;
+                        let playerName = cleanLine.split('(')[0].trim();
+                        if (playerName) {
+                            if (!scorersMap[playerName]) scorersMap[playerName] = 0;
+                            scorersMap[playerName]++;
+                        }
+                    });
+                }
+            });
+        });
+
+        let scorersArray = Object.keys(scorersMap).map(name => ({ name: name, goals: scorersMap[name] }));
+        if (scorersArray.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">Noch keine Torschützen erfasst.</td></tr>`;
+        } else {
+            scorersArray.sort((a, b) => b.goals - a.goals);
+            scorersArray.forEach((s, idx) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align: center; font-weight: bold; color: var(--text-muted);">${idx + 1}.</td>
+                    <td>${s.name}</td>
+                    <td style="text-align: center; font-weight: bold; color: var(--pokal-bright);">${s.goals}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('scorersModal').style.display = 'flex';
+    }
+
+    function openPastWinnersModal() {
+        document.getElementById('pastWinnersModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    loadPokalData();
+    setInterval(() => {
+        loadPokalData();
+    }, 30000);
+</script>
+
+</body>
+</html>

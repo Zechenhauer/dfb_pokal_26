@@ -574,7 +574,7 @@
 
     let teamLogos = {};
     let pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-    let previousScores = {}; // Speichert die letzten Stände zur automatischen Tor-Erkennung
+    let previousScores = {}; 
     let currentRoundId = 1;
     let roundTitles = {
         1: '1. Hauptrunde',
@@ -597,7 +597,7 @@
         return outputArray;
     }
 
-    // Push Benachrichtigungen aktivieren und mit VAPID Key in Supabase speichern
+    // Push Benachrichtigungen aktivieren und mit VAPID Key in der DFB-Tabelle speichern
     async function requestPushPermission() {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
             alert("Push-Benachrichtigungen werden von diesem Browser leider nicht unterstützt.");
@@ -624,7 +624,8 @@
             const p256dh = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
             const auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
 
-            const { error } = await supabaseClient.from('push_subscriptions').upsert({
+            // HIER AUF DIE NEUE DFB-TABELLE GEÄNDERT:
+            const { error } = await supabaseClient.from('push_subscriptions_dfb').upsert({
                 endpoint: subscription.endpoint,
                 p256dh: p256dh,
                 auth: auth
@@ -634,7 +635,7 @@
                 console.error("Supabase Fehlerdetails:", error);
                 alert("Fehler in Supabase: " + error.message);
             } else {
-                alert("Push-Alarm erfolgreich aktiviert! Dein Gerät ist jetzt registriert.");
+                alert("Push-Alarm für DFB-Pokal erfolgreich aktiviert! Dein Gerät ist jetzt registriert.");
             }
 
         } catch (error) {
@@ -985,7 +986,6 @@
 
     loadPokalData();
     
-    // Auto-Refresh im Hintergrund alle 30 Sekunden
     setInterval(() => {
         if (!isAdmin) {
             loadPokalData();

@@ -43,7 +43,6 @@
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
         }
 
-        /* Pokalsieger-Bild als Banner über der Überschrift */
         .header-banner-container {
             text-align: center;
             margin-bottom: 15px;
@@ -129,7 +128,7 @@
             animation: pulse-red 1.2s infinite;
         }
 
-        /* ROUND TABS */
+        /* RUNDEN REGISTER (TABS) */
         .rounds-nav {
             display: flex;
             gap: 6px;
@@ -359,7 +358,6 @@
 <body>
 
 <div class="container">
-    <!-- Pokalsieger-Bild als Banner über der Überschrift -->
     <div class="header-banner-container">
         <img src="https://lhusylpjnujlqomougmg.supabase.co/storage/v1/object/public/vereinslogos/pokalsieger.png" alt="Pokalsieger Banner" class="header-banner-img">
     </div>
@@ -576,7 +574,7 @@
 
     let teamLogos = {};
     let pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-    let previousScores = {}; // Speichert die letzten Stände zur automatischen Toraerkennung
+    let previousScores = {}; // Speichert die letzten Stände zur automatischen Tor-Erkennung
     let currentRoundId = 1;
     let roundTitles = {
         1: '1. Hauptrunde',
@@ -669,19 +667,24 @@
         }
     }
 
-    // Automatischer Push bei echtem Tor
-    async function triggerAutomaticGoalPush(home, away, hScore, aScore) {
+    // Automatischer Push bei echtem Tor inkl. Torschütze und Spielminute
+    async function triggerAutomaticGoalPush(home, away, hScore, aScore, scorerName = '', minute = '') {
         try {
+            let detail = scorerName ? 'Tor durch ' + scorerName : "Tor!";
+            if (minute) {
+                detail += ' (' + minute + '. Min)';
+            }
+
             await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
                 method: 'POST',
                 mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: `⚽ POKAL-TOR! (${hScore}:${aScore})`,
-                    body: `${home} vs ${away}`
+                    body: `${home} vs ${away} — ${detail}`
                 })
             });
-            console.log(`Automatischer Tor-Alarm ausgelöst für ${home} vs ${away} (${hScore}:${aScore})`);
+            console.log(`Automatischer Pokal-Tor-Alarm ausgelöst für ${home} vs ${away} (${hScore}:${aScore})`);
         } catch (e) {
             console.error("Fehler beim automatischen Tor-Push:", e);
         }
@@ -689,7 +692,7 @@
 
     // Live-Tor manuell simulieren (Test-Button)
     async function simulateLiveGoal() {
-        await triggerAutomaticGoalPush("FC Bayern München", "Borussia Dortmund", 1, 0);
+        await triggerAutomaticGoalPush("FC Bayern München", "Borussia Dortmund", 1, 0, "Harry Kane", "25");
         alert("Simuliertes Live-Tor gesendet! Die Push-Nachricht sollte gleich auf dem Handy erscheinen.");
     }
 
@@ -807,12 +810,16 @@
                         }
                     }
 
-                    // --- AUTOMATISCHE TOR-ERKENNUNG ---
+                    // --- AUTOMATISCHE TOR-ERKENNUNG MIT TORSCHÜTZE & MINUTE ---
                     if (homeScore !== null && awayScore !== null) {
                         let prev = previousScores[matchId];
                         if (prev !== undefined) {
                             if (homeScore > prev.home || awayScore > prev.away) {
-                                triggerAutomaticGoalPush(match.team1.teamName, match.team2.teamName, homeScore, awayScore);
+                                let lastGoalObj = (match.goals && match.goals.length > 0) ? match.goals[match.goals.length - 1] : null;
+                                let scorer = lastGoalObj ? lastGoalObj.goalGetterName : '';
+                                let min = lastGoalObj ? lastGoalObj.matchMinute : '';
+
+                                triggerAutomaticGoalPush(match.team1.teamName, match.team2.teamName, homeScore, awayScore, scorer, min);
                             }
                         }
                         previousScores[matchId] = { home: homeScore, away: awayScore };

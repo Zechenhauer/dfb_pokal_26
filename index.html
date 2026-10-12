@@ -194,6 +194,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .header-action-btn {
@@ -255,6 +256,51 @@
             flex-shrink: 0;
         }
 
+        /* ADMIN BEREICH */
+        .admin-toggle-wrapper {
+            text-align: right;
+            margin-top: 15px;
+        }
+        .admin-toggle-btn {
+            background: transparent;
+            border: 1px dashed var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-toggle-btn:hover {
+            color: var(--pokal-bright);
+            border-color: var(--pokal-blue);
+        }
+
+        .admin-card {
+            background: #111827;
+            border: 1px solid var(--pokal-blue);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .btn {
+            background: var(--pokal-blue);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: var(--pokal-blue-hover); }
+
         /* MODAL STYLES */
         .modal-overlay {
             position: fixed;
@@ -302,7 +348,6 @@
         }
         .modal-close:hover { color: #ffffff; }
 
-        /* Titelverteidiger Highlight */
         .defending-champion {
             background: rgba(245, 158, 11, 0.2);
             border-left: 4px solid var(--accent-gold);
@@ -345,6 +390,7 @@
         <div class="section-header">
             <span id="roundTableHeader">1. Hauptrunde — Spiele & Ergebnisse</span>
             <div class="header-actions">
+                <button class="header-action-btn" onclick="requestPushPermission()">🔔 Push-Alarm</button>
                 <button class="header-action-btn" onclick="openScorersModal()">⚽ Torschützen</button>
                 <button class="header-action-btn" onclick="openPastWinnersModal()">🏆 Alle Pokalsieger</button>
                 <button class="header-action-btn" onclick="loadPokalData(true)">🔄 Aktualisieren</button>
@@ -365,6 +411,20 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- ADMIN BEREICH -->
+    <div class="admin-card" id="adminCard">
+        <div style="font-weight: bold; color: var(--pokal-bright); margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+            <span>✏️ Admin-Testbereich</span>
+            <span style="font-size: 0.7rem; color: #3fb950;">● Admin-Modus Aktiv</span>
+        </div>
+        <button class="btn" style="background: #238636;" onclick="sendTestPush()">🚀 Test-Push Benachrichtigung senden</button>
+        <button class="btn" style="background: #e3b341; color: #0b0f19;" onclick="simulateLiveGoal()">⚡ Live-Tor simulieren (Test)</button>
+    </div>
+
+    <div class="admin-toggle-wrapper">
+        <button class="admin-toggle-btn" onclick="toggleAdminMode()">⚙️ Admin-Zugang</button>
     </div>
 </div>
 
@@ -507,8 +567,16 @@
 </div>
 
 <script>
+    const SUPABASE_URL = 'https://lhusylpjnujlqomougmg.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_yXEueWILvAq-Vm2VfTuYyg_BIQeE1KK';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const ADMIN_PIN = "1919";
+    let isAdmin = false;
+
     let teamLogos = {};
     let pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+    let previousScores = {}; // Speichert die letzten Stände zur automatischen Toraerkennung
     let currentRoundId = 1;
     let roundTitles = {
         1: '1. Hauptrunde',
@@ -518,6 +586,128 @@
         5: 'Halbfinale',
         6: 'Finale'
     };
+
+    // VAPID Public Key Helper für Base64-Konvertierung
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+    }
+
+    // Push Benachrichtigungen aktivieren und mit VAPID Key in Supabase speichern
+    async function requestPushPermission() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert("Push-Benachrichtigungen werden von diesem Browser leider nicht unterstützt.");
+            return;
+        }
+        
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                alert("Die Berechtigung für Benachrichtigungen wurde verweigert.");
+                return;
+            }
+
+            const registration = await navigator.serviceWorker.register('./sw.js');
+            await registration.ready;
+
+            const publicVapidKey = 'BAsnfWgySLti5LzulXfN-xI-x7UDV32LO98YXgg1qdoRY1E1Tl05QPgCvOMgfwe80cSv_K7336-dhJTgBkHUI70';
+            
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+            });
+
+            const p256dh = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
+            const auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
+
+            const { error } = await supabaseClient.from('push_subscriptions').upsert({
+                endpoint: subscription.endpoint,
+                p256dh: p256dh,
+                auth: auth
+            }, { onConflict: 'endpoint' });
+
+            if (error) {
+                console.error("Supabase Fehlerdetails:", error);
+                alert("Fehler in Supabase: " + error.message);
+            } else {
+                alert("Push-Alarm erfolgreich aktiviert! Dein Gerät ist jetzt registriert.");
+            }
+
+        } catch (error) {
+            console.error('Fehler bei der Push-Registrierung:', error);
+            alert("Fehler beim Aktivieren der Benachrichtigung: " + error.message);
+        }
+    }
+
+    // Test-Push an die Supabase Edge Function senden
+    async function sendTestPush() {
+        try {
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: "⚽ Test-Tor-Alarm (DFB-Pokal)!",
+                    body: "Das Test-Tor wurde erfolgreich über die Edge Function ausgelöst!"
+                })
+            });
+
+            const textResponse = await response.text();
+            if (response.ok) {
+                alert("Test-Push erfolgreich ausgelöst! Gerät(e) sollten benachrichtigt werden.");
+            } else {
+                alert("Fehler von der Edge Function: " + textResponse);
+            }
+        } catch (e) {
+            alert("Netzwerkfehler: " + e.message);
+        }
+    }
+
+    // Automatischer Push bei echtem Tor
+    async function triggerAutomaticGoalPush(home, away, hScore, aScore) {
+        try {
+            await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: `⚽ POKAL-TOR! (${hScore}:${aScore})`,
+                    body: `${home} vs ${away}`
+                })
+            });
+            console.log(`Automatischer Tor-Alarm ausgelöst für ${home} vs ${away} (${hScore}:${aScore})`);
+        } catch (e) {
+            console.error("Fehler beim automatischen Tor-Push:", e);
+        }
+    }
+
+    // Live-Tor manuell simulieren (Test-Button)
+    async function simulateLiveGoal() {
+        await triggerAutomaticGoalPush("FC Bayern München", "Borussia Dortmund", 1, 0);
+        alert("Simuliertes Live-Tor gesendet! Die Push-Nachricht sollte gleich auf dem Handy erscheinen.");
+    }
+
+    function toggleAdminMode() {
+        const adminCard = document.getElementById('adminCard');
+        if (isAdmin) {
+            isAdmin = false;
+            adminCard.style.display = 'none';
+            return;
+        }
+        let enteredPin = prompt("Bitte Admin-PIN eingeben:");
+        if (enteredPin === ADMIN_PIN) {
+            isAdmin = true;
+            adminCard.style.display = 'block';
+        } else if (enteredPin !== null) {
+            alert("Falsche PIN!");
+        }
+    }
 
     async function loadPokalData(showAlert = false) {
         try {
@@ -558,6 +748,7 @@
                     let homeScore = null;
                     let awayScore = null;
                     let penInfo = "";
+                    let matchId = 'dfb_' + match.matchID;
 
                     if (match.matchResults && match.matchResults.length > 0) {
                         let resPen = match.matchResults.find(r => r.resultTypeID === 3 || (r.resultDescription && r.resultDescription.toLowerCase().includes('elfmeter')));
@@ -589,7 +780,7 @@
                             if (homeScore === awayScore && match.matchIsFinished && match.goals && match.goals.length > 0) {
                                 let lastGoal = match.goals[match.goals.length - 1];
                                 let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
-                                let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreTeam2;
+                                let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreGoal2;
                                 if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
                                     homeScore = hLast;
                                     awayScore = aLast;
@@ -614,6 +805,17 @@
                                 penInfo = " (i.E.)";
                             }
                         }
+                    }
+
+                    // --- AUTOMATISCHE TOR-ERKENNUNG ---
+                    if (homeScore !== null && awayScore !== null) {
+                        let prev = previousScores[matchId];
+                        if (prev !== undefined) {
+                            if (homeScore > prev.home || awayScore > prev.away) {
+                                triggerAutomaticGoalPush(match.team1.teamName, match.team2.teamName, homeScore, awayScore);
+                            }
+                        }
+                        previousScores[matchId] = { home: homeScore, away: awayScore };
                     }
 
                     let apiScorers = [];
@@ -775,8 +977,12 @@
     }
 
     loadPokalData();
+    
+    // Auto-Refresh im Hintergrund alle 30 Sekunden
     setInterval(() => {
-        loadPokalData();
+        if (!isAdmin) {
+            loadPokalData();
+        }
     }, 30000);
 </script>
 

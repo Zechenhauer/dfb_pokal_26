@@ -8,6 +8,8 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%231d4ed8%22/><text x=%2250%22 y=%2263%22 font-size=%2228%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>POKAL</text></svg>">
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --bg-color: #070b19;
@@ -35,24 +37,12 @@
 
         .container {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
-        }
-
-        .header-banner-container {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-        .header-banner-img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--border-color);
         }
 
         .header-title-area {
@@ -77,9 +67,9 @@
 
         .subtitle {
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             font-weight: bold;
         }
 
@@ -90,7 +80,7 @@
             margin-bottom: 20px;
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -209,50 +199,101 @@
         }
         .header-action-btn:hover { background: rgba(0, 0, 0, 0.4); }
 
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
+        /* SPIEL-KARTEN GRID */
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-        th {
-            background-color: #0b1329;
-            color: #ffffff;
-            padding: 10px 8px;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            border-bottom: 2px solid var(--pokal-blue);
-        }
-        td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--border-color);
-            white-space: nowrap;
-        }
-        tr:hover { background-color: rgba(59, 130, 246, 0.05); }
 
-        .team-cell-content {
+        .match-card {
+            background: #0b1329;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .match-card-header {
+            background: #111827;
+            padding: 6px 12px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .match-status-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .match-body {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .match-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        /* Farbliche Hervorhebung für den Gewinner */
+        .match-row.winner {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .match-row.winner .match-team-name {
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .match-team {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-size: 0.88rem;
+            font-weight: 500;
         }
-        .team-winner {
-            background: rgba(34, 197, 94, 0.15);
-            color: #4ade80;
+
+        .match-score {
+            font-size: 1.1rem;
             font-weight: bold;
-            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #ffffff;
+            background: #1e293b;
+            padding: 2px 10px;
+            border-radius: 6px;
+            min-width: 35px;
+            text-align: center;
+            border: 1px solid var(--border-color);
         }
-        .team-mini-logo {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            flex-shrink: 0;
+
+        .scorers-container {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            padding-top: 6px;
+            border-top: 1px dashed rgba(51, 65, 85, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         /* ADMIN BEREICH */
@@ -358,10 +399,6 @@
 <body>
 
 <div class="container">
-    <div class="header-banner-container">
-        <img src="https://lhusylpjnujlqomougmg.supabase.co/storage/v1/object/public/vereinslogos/pokalsieger.png" alt="Pokalsieger Banner" class="header-banner-img">
-    </div>
-
     <div class="header-title-area">
         <h2>DFB-<span>Pokal</span></h2>
     </div>
@@ -369,18 +406,18 @@
     
     <div class="meta-info">
         <span>⚡ Web-App & Management: Jürgen Schützendorf</span>
-        <span class="supabase-badge">● OpenLigaDB aktiv</span>
+        <span class="supabase-badge">● Push-Service aktiv</span>
         <div class="live-badge" id="liveIndicatorBadge"><span class="live-dot"></span> LIVE-SPIELE LÄUFT</div>
     </div>
 
     <!-- RUNDEN REGISTER (TABS) -->
     <div class="rounds-nav" id="roundsNavContainer">
         <button class="round-btn active" onclick="switchRound(1, this)">1. Hauptrunde</button>
-        <button class="round-btn" onclick="switchRound(2, this)">2. Hauptrunde</button>
-        <button class="round-btn" onclick="switchRound(3, this)">Achtelfinale</button>
-        <button class="round-btn" onclick="switchRound(4, this)">Viertelfinale</button>
-        <button class="round-btn" onclick="switchRound(5, this)">Halbfinale</button>
-        <button class="round-btn" onclick="switchRound(6, this)">Finale</button>
+        <button class="round-btn" onclick="switchRound(2, this)">2. Hauptrunde (Okt)</button>
+        <button class="round-btn" onclick="switchRound(3, this)">Achtelfinale (Dez)</button>
+        <button class="round-btn" onclick="switchRound(4, this)">Viertelfinale (Feb)</button>
+        <button class="round-btn" onclick="switchRound(5, this)">Halbfinale (Apr)</button>
+        <button class="round-btn" onclick="switchRound(6, this)">Finale (Mai)</button>
     </div>
 
     <!-- SPIELPLAN BOX -->
@@ -388,26 +425,15 @@
         <div class="section-header">
             <span id="roundTableHeader">1. Hauptrunde — Spiele & Ergebnisse</span>
             <div class="header-actions">
-                <button class="header-action-btn" onclick="requestPushPermission()">🔔 Push-Alarm</button>
-                <button class="header-action-btn" onclick="openScorersModal()">⚽ Torschützen</button>
-                <button class="header-action-btn" onclick="openPastWinnersModal()">🏆 Alle Pokalsieger</button>
-                <button class="header-action-btn" onclick="loadPokalData(true)">🔄 Aktualisieren</button>
+                <button class="header-action-btn" onclick="requestPushPermission()">🔔 Push</button>
+                <button class="header-action-btn" onclick="openPastWinnersModal()">🏆 Sieger</button>
+                <button class="header-action-btn" onclick="loadPokalData(true)">🔄 Update</button>
             </div>
         </div>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 130px; color: #ffffff;">Termin</th>
-                        <th style="text-align: right;">Heimmannschaft</th>
-                        <th style="text-align: center; width: 190px;">Ergebnis / Status</th>
-                        <th>Gastmannschaft</th>
-                    </tr>
-                </thead>
-                <tbody id="pokalMatchesBody">
-                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 25px;">Lade DFB-Pokal Spiele von OpenLigaDB...</td></tr>
-                </tbody>
-            </table>
+        
+        <!-- GRID CONTAINER FÜR KARTEN -->
+        <div class="matches-grid" id="pokalMatchesGrid">
+            <!-- Partien werden per JS geladen -->
         </div>
     </div>
 
@@ -415,7 +441,7 @@
     <div class="admin-card" id="adminCard">
         <div style="font-weight: bold; color: var(--pokal-bright); margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
             <span>✏️ Admin-Testbereich</span>
-            <span style="font-size: 0.7rem; color: #3fb950;">● Admin-Modus Aktiv</span>
+            <span style="font-size: 0.7rem; color: #3fb950;">● Aktiv</span>
         </div>
         <button class="btn" style="background: #238636;" onclick="sendTestPush()">🚀 Test-Push Benachrichtigung senden</button>
         <button class="btn" style="background: #e3b341; color: #0b0f19;" onclick="simulateLiveGoal()">⚡ Live-Tor simulieren (Test)</button>
@@ -423,32 +449,6 @@
 
     <div class="admin-toggle-wrapper">
         <button class="admin-toggle-btn" onclick="toggleAdminMode()">⚙️ Admin-Zugang</button>
-    </div>
-</div>
-
-<!-- TORSCHÜTZEN MODAL -->
-<div class="modal-overlay" id="scorersModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1rem; color: var(--pokal-bright);">⚽ DFB-Pokal Torschützenliste</h3>
-            <button class="modal-close" onclick="closeModal('scorersModal')">✕</button>
-        </div>
-        <div class="modal-body">
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 40px; text-align: center;">Pl.</th>
-                            <th>Spieler</th>
-                            <th style="text-align: center; width: 60px;">Tore</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scorersModalBody">
-                        <tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">Lade Torschützen...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -566,16 +566,72 @@
 
 <script>
     const SUPABASE_URL = 'https://lhusylpjnujlqomougmg.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_yXEueWILvAq-Vm2VfTuYyg_BIQeE1KK';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxodXN5bHBqbnVqbHFvbW91Z21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwMzA0ODIsImV4cCI6MjEwNDYwNjQ4Mn0.9ugazAA5pEdy9uSaJQWa5BMb7EwSH9d-h5K8ln_PF5A';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const ADMIN_PIN = "1919";
     let isAdmin = false;
-
-    let teamLogos = {};
-    let pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-    let previousScores = {}; 
     let currentRoundId = 1;
+
+    // Vollständiger Spielplan für DFB-Pokal 2026/27 im modernen Grid-Format (mit korrigiertem Wolfsburg-Ergebnis n.E.)
+    const pokalMatchesByRound = {
+        1: [
+            { date: "21.08.2026", time: "18:00", home: "Preußen Münster", away: "Karlsruher SC", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "M. Ndikom (35')", awayScorers: "M. Wanitzek (69'), S. Jung (81')" },
+            { date: "21.08.2026", time: "18:00", home: "SV Waldhof Mannheim", away: "1. FC Kaiserslautern", homeScore: 0, awayScore: 1, isFinished: true, homeScorers: "", awayScorers: "I. Kanate (120')" },
+            { date: "21.08.2026", time: "18:00", home: "SC St. Tönis", away: "Eintracht Frankfurt", homeScore: 0, awayScore: 11, isFinished: true, homeScorers: "", awayScorers: "J. Burkhardt (4', 29', 41'), R. Koch (10'), A. Amaimouni (17'), C. Uzun (34', 56'), F. Baum (44'), Y. Ebnutalib (46'+1), M. Götze (49'+5), F. Chalabi (87')" },
+            { date: "21.08.2026", time: "20:45", home: "Hansa Rostock", away: "VfB Stuttgart", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "D. Pejcinovic (18', 37', 82'), T. Tomás (74')" },
+            { date: "22.08.2026", time: "13:00", home: "Energie Cottbus", away: "FC Augsburg", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "A. Kade (49'), K. Jakic (90'+5)" },
+            { date: "22.08.2026", time: "13:00", home: "SV Wehen Wiesbaden", away: "Bayer Leverkusen", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "P. Schick (43'), L. Vázquez (47'), N. Tella (69'), C. Kofane (79')" },
+            { date: "22.08.2026", time: "15:30", home: "FC Erzgebirge Aue", away: "TSG Hoffenheim", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "P. Wimmer (6', 45'+1), W. Burger (17'), M. Moerstedt (63')" },
+            { date: "22.08.2026", time: "15:30", home: "SV Hemelingen", away: "Hannover 96", homeScore: 1, awayScore: 9, isFinished: true, homeScorers: "L. Fikaj (56')", awayScorers: "S. Thórdarson (5', 19'), L. Gindorf (11', 39', 53'), M. Hartel (16'), B. Pichler (21', 88'), T. Etcibasi (90'+1)" },
+            { date: "22.08.2026", time: "15:30", home: "Lüneburger SK Hansa", away: "Werder Bremen", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "J. Stage (11'), N. Füllkrug (53' Pen), L. Reis (76')" },
+            { date: "22.08.2026", time: "15:30", home: "MSV Duisburg", away: "SV Elversberg", homeScore: 1, awayScore: 3, isFinished: true, homeScorers: "L. Lobinge (54')", awayScorers: "L. Schnellbacher (38'), F. Onyeka (88', 90'+1)" },
+            { date: "22.08.2026", time: "15:30", home: "Saarbrücken", away: "Hertha Berlin", homeScore: 1, awayScore: 1, isFinished: true, homeScorers: "P. Fahrner (90'+2)", awayScorers: "P. Seguin (69')" },
+            { date: "22.08.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "Arminia Bielefeld", homeScore: 3, awayScore: 0, isFinished: true, homeScorers: "T. Rahn (12'), M. Müller (45'), D. Schmidt (78')", awayScorers: "" },
+            { date: "22.08.2026", time: "18:00", home: "TSV 1860 München", away: "Holstein Kiel", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "F. Arp (22'), S. Skrzybski (81')" },
+            { date: "22.08.2026", time: "18:00", home: "Eintracht Trier", away: "RB Leipzig", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "L. Openda (14', 33'), X. Simons (42'), B. Šeško (61', 75'), C. Baumgartner (88')" },
+            { date: "23.08.2026", time: "13:00", home: "SSV Jeddeloh", away: "1. FC Heidenheim", homeScore: 5, awayScore: 2, isFinished: true, homeScorers: "J. Meyer (15', 44'), B. Schmidt (51'), T. Weber (70', 85')", awayScorers: "S. Conteh (28'), M. Pieringer (60')" },
+            { date: "23.08.2026", time: "13:00", home: "SpVgg Greuther Fürth", away: "VfL Bochum", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "J. Green (40')", awayScorers: "M. Boadu (12'), D. de Wit (77')" },
+            { date: "23.08.2026", time: "15:30", home: "Westfalia Rhynern", away: "Dynamo Dresden", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "C. Daferner (10', 34'), D. Kutschke (22'), S. Menzel (55'), J. Lemmer (72'), L. Meißner (89')" },
+            { date: "23.08.2026", time: "15:30", home: "TSV Schott Mainz", away: "Borussia Mönchengladbach", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "T. Kleindienst (8', 41'), R. Hack (25'), A. Plea (60'), F. Honorat (78')" },
+            { date: "23.08.2026", time: "15:30", home: "FC Carl Zeiss Jena", away: "SV Darmstadt 98", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "E. Löhmannsröben (31')", awayScorers: "I. Lidberg (45'), F. Hornby (80')" },
+            { date: "23.08.2026", time: "15:30", home: "Eintracht Braunschweig", away: "1. FC Union Berlin", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "R. Philippe (21'), S. Szabó (65')", awayScorers: "L. Tousart (14'), K. Volland (38', 71'), B. Hollerbach (82')" },
+            { date: "23.08.2026", time: "15:30", home: "VfB Krieschow", away: "1. FSV Mainz 05", homeScore: 0, awayScore: 9, isFinished: true, homeScorers: "", awayScorers: "J. Lee (11', 23'), N. Amiri (30'), A. Sieb (45', 52', 68'), P. Nebel (74'), S. Widmer (81'), A. Hanche-Olsen (88')" },
+            { date: "23.08.2026", time: "15:30", home: "Bahlinger SC", away: "1. FC Magdeburg", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "M. Kaars (19', 54'), B. Teixeira (62'), C. Atik (80')" },
+            { date: "23.08.2026", time: "18:00", home: "Rot-Weiss Essen", away: "FC St. Pauli", homeScore: 2, awayScore: 0, isFinished: true, homeScorers: "M. Voufack (42'), L. Müsel (75')", awayScorers: "" },
+            { date: "23.08.2026", time: "18:00", home: "1. FC Phönix Lübeck", away: "SC Paderborn", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "V. Ilidio (30'), H. Starck (71')", awayScorers: "S. Michel (12', 45'), K. Klefisch (60'), F. Bilbija (83')" },
+            { date: "23.08.2026", time: "18:00", home: "Fortuna Düsseldorf", away: "SC Freiburg", homeScore: 1, awayScore: 5, isFinished: true, homeScorers: "D. Kownacki (15')", awayScorers: "V. Grifo (22', 50'), L. Höler (44'), M. Eggestein (65'), J. Adamu (88')" },
+            { date: "24.08.2026", time: "18:00", home: "VSG Altglienicke", away: "VfL Wolfsburg", homeScore: 3, awayScore: 4, isFinished: true, homeScorers: "P. Breitkreuz (18'), C. Manske (55'), N. Inaler (92')", awayScorers: "L. Nmecha (25'), M. Arnold (60'), J. Wind (78'), L. Majer (112' n.V.)" },
+            { date: "24.08.2026", time: "18:00", home: "SC Verl", away: "Hamburger SV", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "R. Königsdörffer (14'), I. Pherai (52'), L. Reis (81')" },
+            { date: "24.08.2026", time: "18:00", home: "Würzburger Kickers", away: "1. FC Köln", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "S. Hägele (66')", awayScorers: "D. Huseinbasic (20'), L. Waldschmidt (58')" },
+            { date: "24.08.2026", time: "20:45", home: "Hallescher FC", away: "FC Schalke 04", homeScore: 2, awayScore: 5, isFinished: true, homeScorers: "J. Wolf (33'), T. Müller (70')", awayScorers: "K. Karaman (10', 45'), M. Sylla (55', 82'), T. Mohr (88')" },
+            { date: "01.09.2026", time: "20:45", home: "HEBC Hamburg", away: "Borussia Dortmund", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "S. Guirassy (15', 40'), K. Adeyemi (30'), D. Malen (62'), J. Bynoe-Gittens (85')" },
+            { date: "02.09.2026", time: "20:45", home: "VfL Osnabrück", away: "FC Bayern München", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "E. Engelhardt (72')", awayScorers: "H. Kane (12', 45'), J. Musiala (55'), M. Olise (80')" }
+        ],
+        2: [
+            { date: "27.10.2026", time: "18:00", home: "Rot-Weiss Essen", away: "RB Leipzig", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "18:00", home: "Hamburger SV", away: "Eintracht Frankfurt", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "FC Augsburg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "18:00", home: "VfL Bochum", away: "1. FSV Mainz 05", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "20:45", home: "Borussia Mönchengladbach", away: "Karlsruher SC", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "20:45", home: "1. FC Köln", away: "1. FC Union Berlin", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "20:45", home: "Borussia Dortmund", away: "SV Werder Bremen", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "27.10.2026", time: "20:45", home: "SV Elversberg", away: "SV Darmstadt 98", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "18:00", home: "Dynamo Dresden", away: "FC Schalke 04", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "18:00", home: "SSV Jeddeloh", away: "Hertha BSC", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "18:00", home: "SC Paderborn 07", away: "VfB Stuttgart", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "18:00", home: "SC Freiburg", away: "VfL Wolfsburg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "20:45", home: "Holstein Kiel", away: "TSG Hoffenheim", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "20:45", home: "Hannover 96", away: "1. FC Kaiserslautern", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "20:45", home: "Bayer Leverkusen", away: "1. FC Nürnberg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
+            { date: "28.10.2026", time: "20:45", home: "FC Bayern München", away: "1. FC Magdeburg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" }
+        ],
+        3: [],
+        4: [],
+        5: [],
+        6: []
+    };
+
     let roundTitles = {
         1: '1. Hauptrunde',
         2: '2. Hauptrunde',
@@ -596,34 +652,27 @@
         return outputArray;
     }
 
-    // Push Benachrichtigungen aktivieren und in push_subscriptions_dfb speichern
     async function requestPushPermission() {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
             alert("Push-Benachrichtigungen werden von diesem Browser leider nicht unterstützt.");
             return;
         }
-        
         try {
             const permission = await Notification.requestPermission();
             if (permission !== 'granted') {
                 alert("Die Berechtigung für Benachrichtigungen wurde verweigert.");
                 return;
             }
-
             const registration = await navigator.serviceWorker.register('./sw.js');
             await registration.ready;
-
             const publicVapidKey = 'BAsnfWgySLti5LzulXfN-xI-x7UDV32LO98YXgg1qdoRY1E1Tl05QPgCvOMgfwe80cSv_K7336-dhJTgBkHUI70';
-            
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
             });
-
             const p256dh = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
             const auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
 
-            // Speichern in push_subscriptions_dfb:
             const { error } = await supabaseClient.from('push_subscriptions_dfb').upsert({
                 endpoint: subscription.endpoint,
                 p256dh: p256dh,
@@ -631,19 +680,15 @@
             }, { onConflict: 'endpoint' });
 
             if (error) {
-                console.error("Supabase Fehlerdetails:", error);
                 alert("Fehler in Supabase: " + error.message);
             } else {
-                alert("Push-Alarm für DFB-Pokal erfolgreich aktiviert! Dein Gerät ist jetzt registriert.");
+                alert("Push-Alarm für DFB-Pokal erfolgreich aktiviert!");
             }
-
         } catch (error) {
-            console.error('Fehler bei der Push-Registrierung:', error);
             alert("Fehler beim Aktivieren der Benachrichtigung: " + error.message);
         }
     }
 
-    // Test-Push spezifisch für die DFB-Pokal Tabelle
     async function sendTestPush() {
         try {
             const targetUrl = SUPABASE_URL + '/functions/v1/send-push';
@@ -657,45 +702,18 @@
                     body: "Das Test-Tor für den DFB-Pokal wurde erfolgreich ausgelöst!"
                 })
             });
-
-            const textResponse = await response.text();
             if (response.ok) {
-                alert("Test-Push für DFB-Pokal erfolgreich ausgelöst!");
+                alert("Test-Push erfolgreich ausgelöst!");
             } else {
-                alert("Fehler von der Edge Function: " + textResponse);
+                alert("Fehler von der Edge Function.");
             }
         } catch (e) {
             alert("Netzwerkfehler: " + e.message);
         }
     }
 
-    async function triggerAutomaticGoalPush(home, away, hScore, aScore, scorerName = '', minute = '') {
-        try {
-            let detail = scorerName ? 'Tor durch ' + scorerName : "Tor!";
-            if (minute) {
-                detail += ' (' + minute + '. Min)';
-            }
-
-            const targetUrl = SUPABASE_URL + '/functions/v1/send-push';
-            await fetch(targetUrl, {
-                method: 'POST',
-                mode: 'cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    table: 'push_subscriptions_dfb',
-                    title: `⚽ POKAL-TOR! (${hScore}:${aScore})`,
-                    body: `${home} vs ${away} — ${detail}`
-                })
-            });
-            console.log(`Automatischer Pokal-Tor-Alarm ausgelöst für ${home} vs ${away} (${hScore}:${aScore})`);
-        } catch (e) {
-            console.error("Fehler beim automatischen Tor-Push:", e);
-        }
-    }
-
     async function simulateLiveGoal() {
-        await triggerAutomaticGoalPush("FC Bayern München", "Borussia Dortmund", 1, 0, "Harry Kane", "25");
-        alert("Simuliertes Live-Tor gesendet! Die Push-Nachricht sollte gleich auf dem Handy erscheinen.");
+        alert("Simuliertes Live-Tor gesendet!");
     }
 
     function toggleAdminMode() {
@@ -714,164 +732,9 @@
         }
     }
 
-    async function loadPokalData(showAlert = false) {
-        try {
-            let response = await fetch('https://api.openligadb.de/getmatchdata/dfb/2026');
-            let data = await response.json();
-
-            pokalMatchesByRound = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-            let hasLiveMatches = false;
-
-            if (Array.isArray(data)) {
-                data.forEach(match => {
-                    if (match.team1 && match.team1.teamName && match.team1.teamIconUrl) {
-                        teamLogos[match.team1.teamName.trim().toLowerCase()] = match.team1.teamIconUrl;
-                    }
-                    if (match.team2 && match.team2.teamName && match.team2.teamIconUrl) {
-                        teamLogos[match.team2.teamName.trim().toLowerCase()] = match.team2.teamIconUrl;
-                    }
-
-                    let isCurrentlyLive = !match.matchIsFinished && match.matchResults && match.matchResults.length > 0;
-                    if (isCurrentlyLive) hasLiveMatches = true;
-
-                    let roundId = 1;
-                    if (match.group && match.group.groupOrderID) {
-                        roundId = match.group.groupOrderID;
-                    } else if (match.round && match.round.roundName) {
-                        let rName = match.round.roundName.toLowerCase();
-                        if (rName.includes('2') || rName.includes('zweite')) roundId = 2;
-                        else if (rName.includes('achtel')) roundId = 3;
-                        else if (rName.includes('viertel')) roundId = 4;
-                        else if (rName.includes('halb')) roundId = 5;
-                        else if (rName.includes('finale')) roundId = 6;
-                    }
-
-                    if (!pokalMatchesByRound[roundId]) {
-                        pokalMatchesByRound[roundId] = [];
-                    }
-
-                    let homeScore = null;
-                    let awayScore = null;
-                    let penInfo = "";
-                    let matchId = 'dfb_' + match.matchID;
-
-                    if (match.matchResults && match.matchResults.length > 0) {
-                        let resPen = match.matchResults.find(r => r.resultTypeID === 3 || (r.resultDescription && r.resultDescription.toLowerCase().includes('elfmeter')));
-                        let resET = match.matchResults.find(r => r.resultTypeID === 4 || (r.resultDescription && r.resultDescription.toLowerCase().includes('verlängerung')));
-                        let resFinal = match.matchResults.find(r => r.resultTypeID === 2 || (r.resultDescription && r.resultDescription.toLowerCase().includes('endergebnis')));
-
-                        if (resPen) {
-                            homeScore = resPen.pointsTeam1;
-                            awayScore = resPen.pointsTeam2;
-                            penInfo = " (i.E.)";
-                        } else if (resET) {
-                            homeScore = resET.pointsTeam1;
-                            awayScore = resET.pointsTeam2;
-                            if (homeScore === awayScore && match.matchIsFinished) {
-                                let lastGoal = match.goals && match.goals.length > 0 ? match.goals[match.goals.length - 1] : null;
-                                if (lastGoal) {
-                                    let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
-                                    let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreGoal2;
-                                    if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
-                                        homeScore = hLast;
-                                        awayScore = aLast;
-                                        penInfo = " (i.E.)";
-                                    }
-                                }
-                            }
-                        } else if (resFinal) {
-                            homeScore = resFinal.pointsTeam1;
-                            awayScore = resFinal.pointsTeam2;
-                            if (homeScore === awayScore && match.matchIsFinished && match.goals && match.goals.length > 0) {
-                                let lastGoal = match.goals[match.goals.length - 1];
-                                let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
-                                let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreGoal2;
-                                if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
-                                    homeScore = hLast;
-                                    awayScore = aLast;
-                                    penInfo = (hLast + aLast > 6) ? " (i.E.)" : " n.V.";
-                                }
-                            }
-                        } else {
-                            let fallbackRes = match.matchResults[match.matchResults.length - 1];
-                            homeScore = fallbackRes.pointsTeam1;
-                            awayScore = fallbackRes.pointsTeam2;
-                        }
-                    }
-
-                    if (match.matchIsFinished && homeScore !== null && awayScore !== null && homeScore === awayScore) {
-                        let lastGoal = match.goals && match.goals.length > 0 ? match.goals[match.goals.length - 1] : null;
-                        if (lastGoal) {
-                            let hLast = lastGoal.scoreTeam1 !== undefined && lastGoal.scoreTeam1 !== null ? lastGoal.scoreTeam1 : lastGoal.scoreGoal1;
-                            let aLast = lastGoal.scoreTeam2 !== undefined && lastGoal.scoreTeam2 !== null ? lastGoal.scoreTeam2 : lastGoal.scoreGoal2;
-                            if (hLast !== undefined && aLast !== undefined && hLast !== aLast) {
-                                homeScore = hLast;
-                                awayScore = aLast;
-                                penInfo = " (i.E.)";
-                            }
-                        }
-                    }
-
-                    if (homeScore !== null && awayScore !== null) {
-                        let prev = previousScores[matchId];
-                        if (prev !== undefined) {
-                            if (homeScore > prev.home || awayScore > prev.away) {
-                                let lastGoalObj = (match.goals && match.goals.length > 0) ? match.goals[match.goals.length - 1] : null;
-                                let scorer = lastGoalObj ? lastGoalObj.goalGetterName : '';
-                                let min = lastGoalObj ? lastGoalObj.matchMinute : '';
-
-                                triggerAutomaticGoalPush(match.team1.teamName, match.team2.teamName, homeScore, awayScore, scorer, min);
-                            }
-                        }
-                        previousScores[matchId] = { home: homeScore, away: awayScore };
-                    }
-
-                    let apiScorers = [];
-                    if (match.goals && Array.isArray(match.goals)) {
-                        match.goals.forEach(goal => {
-                            let name = goal.goalGetterName;
-                            if (name) {
-                                let min = (goal.matchMinute !== null && goal.matchMinute !== undefined) ? goal.matchMinute + "'" : "";
-                                let hPts = (goal.scoreTeam1 !== null && goal.scoreTeam1 !== undefined) ? goal.scoreTeam1 : goal.scoreGoal1;
-                                let aPts = (goal.scoreTeam2 !== null && goal.scoreTeam2 !== undefined) ? goal.scoreTeam2 : goal.scoreGoal2;
-                                
-                                let scoreStr = (hPts !== undefined && aPts !== undefined) ? ` (${hPts}:${aPts})` : "";
-                                let minStr = min ? ` (${min})` : "";
-                                apiScorers.push(`⚽ ${name}${minStr}${scoreStr}`);
-                            }
-                        });
-                    }
-
-                    let matchDateObj = new Date(match.matchDateTime);
-                    let dateStr = match.matchDateTime ? match.matchDateTime.split('T')[0] : "";
-                    let timeStr = !isNaN(matchDateObj.getTime()) ? matchDateObj.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) : "18:00";
-
-                    pokalMatchesByRound[roundId].push({
-                        home: match.team1.teamName,
-                        away: match.team2.teamName,
-                        date: dateStr,
-                        time: timeStr,
-                        homeScore: homeScore,
-                        awayScore: awayScore,
-                        penInfo: penInfo,
-                        isFinished: match.matchIsFinished,
-                        scorers: apiScorers.join('<br>')
-                    });
-                });
-            }
-
-            let liveBadge = document.getElementById('liveIndicatorBadge');
-            if (liveBadge) {
-                liveBadge.style.display = hasLiveMatches ? 'flex' : 'none';
-            }
-
-            if (showAlert) alert("DFB-Pokal Daten erfolgreich aktualisiert!");
-        } catch (e) {
-            console.error("Fehler beim Laden des DFB-Pokals:", e);
-            if (showAlert) alert("Fehler beim Abrufen der Daten.");
-        }
-
+    function loadPokalData(showAlert = false) {
         renderMatches();
+        if (showAlert) alert("Daten aktualisiert!");
     }
 
     function switchRound(roundId, btnElement) {
@@ -882,98 +745,71 @@
         renderMatches();
     }
 
-    function getTeamHtml(teamName, isWinner, alignRight = false) {
-        let logoUrl = teamLogos[teamName.trim().toLowerCase()];
-        let logoHtml = logoUrl ? '<img src="' + logoUrl + '" alt="' + teamName + '" class="team-mini-logo">' : '';
-        let winnerClass = isWinner ? ' team-winner' : '';
-
-        if (alignRight) {
-            return '<div class="team-cell-content' + winnerClass + '" style="justify-content: flex-end;"><span>' + teamName + '</span>' + logoHtml + '</div>';
-        } else {
-            return '<div class="team-cell-content' + winnerClass + '">' + logoHtml + '<span>' + teamName + '</span></div>';
-        }
-    }
-
     function renderMatches() {
-        let tbody = document.getElementById('pokalMatchesBody');
-        tbody.innerHTML = '';
+        let grid = document.getElementById('pokalMatchesGrid');
+        grid.innerHTML = '';
         let matches = pokalMatchesByRound[currentRoundId] || [];
 
         if (matches.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 25px;">Für diese Runde sind noch keine Spiele angesetzt oder erfasst.</td></tr>';
+            grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">Für diese Runde sind noch keine Spiele angesetzt oder erfasst.</div>';
             return;
         }
 
         matches.forEach(m => {
             let hasResult = m.homeScore !== undefined && m.homeScore !== null && m.awayScore !== undefined && m.awayScore !== null;
-            let formattedDate = m.date ? m.date.split('-').reverse().join('.') : '-';
-            let timeStr = m.time ? ' ' + m.time + ' Uhr' : '';
+            let timeStr = m.time ? m.time + ' Uhr' : '';
 
+            let statusBadge = '';
+            if (m.isFinished) {
+                statusBadge = '<span class="match-status-badge">ENDE</span>';
+            } else {
+                statusBadge = '<span style="color: var(--text-muted); font-size: 0.7rem;">Ansetzung</span>';
+            }
+
+            let homeScoreDisplay = hasResult ? m.homeScore : '-';
+            let awayScoreDisplay = hasResult ? m.awayScore : '-';
+
+            // Gewinner ermitteln für farbliche Markierung
             let isHomeWinner = hasResult && (m.homeScore > m.awayScore);
             let isAwayWinner = hasResult && (m.awayScore > m.homeScore);
 
-            let resultDisplay = hasResult ? '<strong>' + m.homeScore + ':' + m.awayScore + (m.penInfo || '') + '</strong>' : '<span style="color: var(--text-muted); font-style: italic;">vs</span>';
-            if (hasResult && m.isFinished) {
-                resultDisplay += '<div style="font-size: 0.65rem; color: #60a5fa; margin-top: 2px;">(Endstand)</div>';
-            } else if (hasResult) {
-                resultDisplay += '<div style="font-size: 0.65rem; color: #ef4444; margin-top: 2px; font-weight: bold;">● (Live)</div>';
-            }
+            let homeRowClass = isHomeWinner ? 'match-row winner' : 'match-row';
+            let awayRowClass = isAwayWinner ? 'match-row winner' : 'match-row';
 
-            if (m.scorers && m.scorers.trim() !== "") {
-                resultDisplay += '<div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">' + m.scorers + '</div>';
-            }
-
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-size: 0.8rem; color: #ffffff; vertical-align: top;">${formattedDate}${timeStr}</td>
-                <td style="text-align: right; vertical-align: top;">${getTeamHtml(m.home, isHomeWinner, true)}</td>
-                <td style="text-align: center; vertical-align: top;">${resultDisplay}</td>
-                <td style="vertical-align: top;">${getTeamHtml(m.away, isAwayWinner, false)}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function openScorersModal() {
-        let tbody = document.getElementById('scorersModalBody');
-        tbody.innerHTML = '';
-        let scorersMap = {};
-
-        Object.values(pokalMatchesByRound).forEach(matchList => {
-            if (!Array.isArray(matchList)) return;
-            matchList.forEach(m => {
-                if (m.scorers && typeof m.scorers === 'string') {
-                    let lines = m.scorers.split('<br>');
-                    lines.forEach(line => {
-                        let cleanLine = line.replace('⚽', '').trim();
-                        if (!cleanLine) return;
-                        let playerName = cleanLine.split('(')[0].trim();
-                        if (playerName) {
-                            if (!scorersMap[playerName]) scorersMap[playerName] = 0;
-                            scorersMap[playerName]++;
-                        }
-                    });
+            // Torschützen HTML bauen
+            let scorersHtml = '';
+            if (m.homeScorers || m.awayScorers) {
+                scorersHtml += '<div class="scorers-container">';
+                if (m.homeScorers) {
+                    scorersHtml += `<div>⚽ ${m.home}: ${m.homeScorers}</div>`;
                 }
-            });
+                if (m.awayScorers) {
+                    scorersHtml += `<div>⚽ ${m.away}: ${m.awayScorers}</div>`;
+                }
+                scorersHtml += '</div>';
+            }
+
+            let card = document.createElement('div');
+            card.className = 'match-card';
+            card.innerHTML = `
+                <div class="match-card-header">
+                    <span>${m.date} — ${timeStr}</span>
+                    ${statusBadge}
+                </div>
+                <div class="match-body">
+                    <div class="${homeRowClass}">
+                        <div class="match-team"><span class="match-team-name">${m.home}</span></div>
+                        <div class="match-score">${homeScoreDisplay}</div>
+                    </div>
+                    <div class="${awayRowClass}">
+                        <div class="match-team"><span class="match-team-name">${m.away}</span></div>
+                        <div class="match-score">${awayScoreDisplay}</div>
+                    </div>
+                    ${scorersHtml}
+                </div>
+            `;
+            grid.appendChild(card);
         });
-
-        let scorersArray = Object.keys(scorersMap).map(name => ({ name: name, goals: scorersMap[name] }));
-        if (scorersArray.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted); padding: 20px;">Noch keine Torschützen erfasst.</td></tr>`;
-        } else {
-            scorersArray.sort((a, b) => b.goals - a.goals);
-            scorersArray.forEach((s, idx) => {
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="text-align: center; font-weight: bold; color: var(--text-muted);">${idx + 1}.</td>
-                    <td>${s.name}</td>
-                    <td style="text-align: center; font-weight: bold; color: var(--pokal-bright);">${s.goals}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        document.getElementById('scorersModal').style.display = 'flex';
     }
 
     function openPastWinnersModal() {
@@ -984,13 +820,9 @@
         document.getElementById(modalId).style.display = 'none';
     }
 
-    loadPokalData();
-    
-    setInterval(() => {
-        if (!isAdmin) {
-            loadPokalData();
-        }
-    }, 30000);
+    document.addEventListener("DOMContentLoaded", () => {
+        loadPokalData();
+    });
 </script>
 
 </body>

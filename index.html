@@ -5,21 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DFB-Pokal 2026/27</title>
     <!-- Homescreen-Icon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%231d4ed8%22/><text x=%2250%22 y=%2263%22 font-size=%2228%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>POKAL</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%237c3aed%22/><text x=%2250%22 y=%2263%22 font-size=%2226%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22 font-family=%22sans-serif%22>POKAL</text></svg>">
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-color: #070b19;
-            --card-bg: #0f172a;
-            --card-inner: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-            --pokal-blue: #1d4ed8;
-            --pokal-blue-hover: #1e40af;
-            --pokal-bright: #3b82f6;
-            --accent-gold: #f59e0b;
+            --bg-color: #080612;
+            --card-bg: #120e24;
+            --card-inner: #1b1436;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --goal-muted: #d1d5db;
+            --border-color: #2e2157;
+            --neon-pink: #ec4899;
+            --neon-purple: #8b5cf6;
+            --neon-blue: #3b82f6;
+            --neon-cyan: #06b6d4;
+            --neon-green: #10b981;
+            --accent-gold: #fbbf24;
         }
 
         * { box-sizing: border-box; }
@@ -31,16 +34,17 @@
             padding: 15px;
             display: flex;
             justify-content: center;
+            min-height: 100vh;
         }
 
         .container {
             width: 100%;
-            max-width: 1100px;
+            max-width: 1050px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.15);
         }
 
         .header-title-area {
@@ -55,17 +59,20 @@
             text-align: center;
             margin: 0;
             color: #ffffff;
-            font-size: 1.8rem;
-            font-weight: 800;
+            font-size: 2rem;
+            font-weight: 900;
             letter-spacing: 0.5px;
+            text-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
         }
         h2 span {
-            color: var(--pokal-bright);
+            background: linear-gradient(135deg, var(--neon-pink), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             margin-bottom: 15px;
             font-weight: bold;
@@ -75,106 +82,106 @@
             text-align: center;
             font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 15px;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .supabase-badge {
-            color: #60a5fa;
-            background: rgba(30, 64, 175, 0.25);
-            padding: 2px 8px;
-            border-radius: 4px;
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--neon-cyan);
+            background: rgba(6, 182, 212, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(6, 182, 212, 0.3);
             font-weight: 600;
         }
 
-        @keyframes pulse-red {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+        @keyframes pulse-neon {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); }
+            50% { opacity: 0.4; filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.2)); }
         }
         .live-badge {
             display: none;
             color: #f87171;
-            background: rgba(239, 68, 68, 0.15);
-            padding: 3px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.2);
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(239, 68, 68, 0.5);
             font-weight: bold;
             align-items: center;
             gap: 6px;
             font-size: 0.75rem;
+            animation: pulse-neon 1.2s infinite;
         }
         .live-dot {
             width: 8px;
             height: 8px;
             background-color: #ef4444;
             border-radius: 50%;
-            animation: pulse-red 1.2s infinite;
         }
 
         /* RUNDEN REGISTER (TABS) */
         .rounds-nav {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             overflow-x: auto;
-            padding-bottom: 8px;
-            margin-bottom: 20px;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
         }
         .round-btn {
             background: var(--card-inner);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 8px 14px;
-            border-radius: 6px;
+            padding: 9px 14px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             white-space: nowrap;
             transition: all 0.2s;
         }
         .round-btn:hover {
-            background: #2563eb33;
+            background: #281c52;
             color: #ffffff;
-            border-color: var(--pokal-bright);
+            border-color: var(--neon-purple);
         }
         .round-btn.active {
-            background: var(--pokal-blue);
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
             color: #ffffff;
-            border-color: var(--pokal-bright);
-            box-shadow: 0 0 12px rgba(37, 99, 235, 0.4);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
         }
 
         .section-box {
             background: var(--card-inner);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
+            border-radius: 14px;
+            padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
         }
 
         .section-header {
-            background-color: var(--pokal-blue);
+            background: linear-gradient(135deg, #7c3aed, #db2777);
             color: #ffffff;
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
+            border: 1px solid rgba(236, 72, 153, 0.4);
+            padding: 12px 16px;
             font-weight: bold;
-            text-align: center;
             text-transform: uppercase;
             font-size: 0.9rem;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.4);
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
 
         .header-actions {
@@ -185,171 +192,169 @@
         }
 
         .header-action-btn {
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #ffffff;
-            padding: 4px 10px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        .header-action-btn:hover { background: rgba(0, 0, 0, 0.4); }
-
-        /* SPIEL-KARTEN GRID */
-        .matches-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 15px;
-        }
-
-        .match-card {
-            background: #0b1329;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .match-card-header {
-            background: #111827;
-            padding: 6px 12px;
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .match-status-badge {
-            background: rgba(34, 197, 94, 0.2);
-            color: #4ade80;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-        .match-status-badge.live {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            border-color: rgba(239, 68, 68, 0.4);
-            animation: pulse-red 1.2s infinite;
-        }
-
-        .match-body {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .match-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: background 0.2s;
-        }
-
-        .match-row.winner {
-            background: rgba(34, 197, 94, 0.12);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-        .match-row.winner .match-team-name {
-            color: #4ade80;
-            font-weight: bold;
-        }
-
-        .match-team {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.88rem;
-            font-weight: 500;
-        }
-
-        .match-score {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #ffffff;
-            background: #1e293b;
-            padding: 2px 10px;
-            border-radius: 6px;
-            min-width: 35px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .scorers-container {
             font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-            padding-top: 6px;
-            border-top: 1px dashed rgba(51, 65, 85, 0.6);
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .header-action-btn:hover { background: rgba(0, 0, 0, 0.5); border-color: var(--accent-gold); color: var(--accent-gold); }
+
+        /* TORSCHÜTZEN KLARE LISTE (8 Kacheln) */
+        .scorers-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .scorer-item {
+            background: rgba(18, 14, 36, 0.7);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
             display: flex;
-            flex-direction: column;
-            gap: 2px;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        .scorer-name { font-weight: bold; color: #fff; }
+        .scorer-goals {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--neon-green);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 900;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        /* TABELLEN-DESIGN FÜR SPIELE */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #120e24;
+            color: var(--text-muted);
+            padding: 10px 12px;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 12px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(46, 33, 87, 0.6);
+        }
+
+        tr:hover { background-color: rgba(139, 92, 246, 0.05); }
+
+        .team-cell-home {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+            font-size: 0.88rem;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .team-cell-away {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-start;
+            font-size: 0.88rem;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        /* Dezent gefärbter Teamname bei Sieg */
+        .winner-team {
+            color: var(--neon-green) !important;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .goal-row-home {
+            font-size: 0.7rem;
+            color: var(--goal-muted);
+            margin-top: 2px;
+            text-align: right;
+        }
+
+        .goal-row-away {
+            font-size: 0.7rem;
+            color: var(--goal-muted);
+            margin-top: 2px;
+            text-align: left;
         }
 
         /* ADMIN BEREICH */
         .admin-toggle-wrapper {
             text-align: right;
-            margin-top: 15px;
+            margin-top: 20px;
         }
         .admin-toggle-btn {
             background: transparent;
             border: 1px dashed var(--border-color);
             color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
         }
         .admin-toggle-btn:hover {
-            color: var(--pokal-bright);
-            border-color: var(--pokal-blue);
+            color: var(--neon-pink);
+            border-color: var(--neon-pink);
         }
 
         .admin-card {
-            background: #111827;
-            border: 1px solid var(--pokal-blue);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
+            background: #120e24;
+            border: 1px solid var(--neon-purple);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
             display: none;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
         }
 
         .btn {
-            background: var(--pokal-blue);
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
             color: #ffffff;
             border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
+            padding: 10px 16px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             width: 100%;
-            margin-top: 10px;
-            transition: background 0.2s;
+            margin-top: 8px;
+            transition: opacity 0.2s;
         }
-        .btn:hover { background: var(--pokal-blue-hover); }
+        .btn:hover { opacity: 0.9; }
 
         /* MODAL STYLES */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -358,27 +363,27 @@
         }
         .modal-content {
             background: var(--card-bg);
-            border: 1px solid var(--pokal-bright);
-            border-radius: 12px;
+            border: 2px solid var(--neon-pink);
+            border-radius: 16px;
             width: 100%;
-            max-width: 650px;
+            max-width: 750px;
             max-height: 85vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.3);
         }
         .modal-header {
-            padding: 15px 20px;
-            background: #0b1329;
+            padding: 16px 20px;
+            background: var(--card-inner);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top-left-radius: 12px;
-            border-top-right-radius: 12px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
         }
         .modal-body {
-            padding: 15px 20px;
+            padding: 16px 20px;
             overflow-y: auto;
             flex: 1;
         }
@@ -391,20 +396,8 @@
         }
         .modal-close:hover { color: #ffffff; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-        th, td {
-            padding: 8px 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        th { color: var(--text-muted); }
-
         .defending-champion {
-            background: rgba(245, 158, 11, 0.2);
+            background: rgba(251, 191, 36, 0.15);
             border-left: 4px solid var(--accent-gold);
             font-weight: bold;
             color: #fde047;
@@ -415,9 +408,9 @@
 
 <div class="container">
     <div class="header-title-area">
-        <h2>DFB-<span>Pokal</span></h2>
+        <h2>DFB-<span>POKAL</span></h2>
     </div>
-    <div class="subtitle">Saison 2026/27 — Live-Spielplan & Statistik</div>
+    <div class="subtitle">Saison 2026/27 — Live-Spielplan & Torschützen</div>
     
     <div class="meta-info">
         <span>⚡ Web-App & Management: Jürgen Schützendorf</span>
@@ -435,6 +428,16 @@
         <button class="round-btn" onclick="switchRound(6, this)">Finale (Mai)</button>
     </div>
 
+    <!-- TOP-TORSCHÜTZEN BEREICH (8 Kacheln) -->
+    <div class="section-box">
+        <div class="section-header" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">
+            <span>⚽ Top-Torschützen DFB-Pokal</span>
+        </div>
+        <div class="scorers-preview" id="topScorersContainer">
+            <!-- Wird dynamisch befüllt -->
+        </div>
+    </div>
+
     <!-- SPIELPLAN BOX -->
     <div class="section-box">
         <div class="section-header">
@@ -446,20 +449,32 @@
             </div>
         </div>
         
-        <!-- GRID CONTAINER FÜR KARTEN -->
-        <div class="matches-grid" id="pokalMatchesGrid">
-            <!-- Partien werden per JS geladen -->
+        <!-- TABELLEN-ANSICHT FÜR SPIELE -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 130px;">Termin</th>
+                        <th style="text-align: right;">Heimmannschaft</th>
+                        <th style="text-align: center; width: 120px;">Ergebnis / Status</th>
+                        <th style="text-align: left;">Gastmannschaft</th>
+                    </tr>
+                </thead>
+                <tbody id="pokalTableBody">
+                    <!-- Partien werden per JS geladen -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- ADMIN BEREICH -->
     <div class="admin-card" id="adminCard">
-        <div style="font-weight: bold; color: var(--pokal-bright); margin-bottom: 12px; text-transform: uppercase; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
             <span>✏️ Admin-Testbereich</span>
-            <span style="font-size: 0.7rem; color: #3fb950;">● Aktiv</span>
+            <span style="font-size: 0.65rem; color: #10b981;">● Aktiv</span>
         </div>
-        <button class="btn" style="background: #238636;" onclick="sendTestPush()">🚀 Test-Push Benachrichtigung senden</button>
-        <button class="btn" style="background: #e3b341; color: #0b0f19;" onclick="simulateLiveGoal()">⚡ Live-Tor simulieren (Test)</button>
+        <button class="btn" style="background: #10b981;" onclick="sendTestPush()">🚀 Test-Push Benachrichtigung senden</button>
+        <button class="btn" style="background: var(--accent-gold); color: #120e24;" onclick="simulateLiveGoal()">⚡ Live-Tor simulieren (Test)</button>
     </div>
 
     <div class="admin-toggle-wrapper">
@@ -471,7 +486,7 @@
 <div class="modal-overlay" id="pastWinnersModal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 style="margin: 0; font-size: 1rem; color: var(--pokal-bright);">🏆 Alle DFB-Pokalsieger der Historie</h3>
+            <h3 style="margin: 0; font-size: 1rem; color: var(--accent-gold);">🏆 Alle DFB-Pokalsieger der Historie</h3>
             <button class="modal-close" onclick="closeModal('pastWinnersModal')">✕</button>
         </div>
         <div class="modal-body">
@@ -486,7 +501,7 @@
                 <tbody>
                     <tr class="defending-champion">
                         <td>2025/2026</td>
-                        <td>⭐ FC Bayern München <span style="font-size: 0.65rem; background: var(--accent-gold); color: #000; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">Titelverteidiger</span></td>
+                        <td>⭐ FC Bayern München <span style="font-size: 0.6rem; background: var(--accent-gold); color: #000; padding: 2px 5px; border-radius: 4px; margin-left: 5px; font-weight: bold;">Titelverteidiger</span></td>
                         <td>FC Bayern München - VfB Stuttgart 3:0</td>
                     </tr>
                     <tr><td>2024/2025</td><td>VfB Stuttgart</td><td>VfB Stuttgart - Arminia Bielefeld 4:2</td></tr>
@@ -579,7 +594,7 @@
 
 <script>
     const SUPABASE_URL = 'https://lhusylpjnujlqomougmg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxodXN5bHBqbnVqbHFvbW91Z21nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwMzA0ODIsImV4cCI6MjEwNDYwNjQ4Mn0.9ugazAA5pEdy9uSaJQWa5BMb7EwSH9d-h5K8ln_PF5A';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxodXN5bHBqbnVqbHFvbW91Z21nIiwicm9sZSI6ImFub24iOjE3ODkwMzA0ODIsImV4cCI6MjEwNDYwNjQ4Mn0.9ugazAA5pEdy9uSaJQWa5BMb7EwSH9d-h5K8ln_PF5A';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const ADMIN_PIN = "1919";
@@ -589,37 +604,37 @@
 
     const pokalMatchesByRound = {
         1: [
-            { date: "21.08.2026", time: "18:00", home: "Preußen Münster", away: "Karlsruher SC", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "M. Ndikom (35')", awayScorers: "M. Wanitzek (69'), S. Jung (81')" },
-            { date: "21.08.2026", time: "18:00", home: "SV Waldhof Mannheim", away: "1. FC Kaiserslautern", homeScore: 0, awayScore: 1, isFinished: true, homeScorers: "", awayScorers: "I. Kanate (120')" },
-            { date: "21.08.2026", time: "18:00", home: "SC St. Tönis", away: "Eintracht Frankfurt", homeScore: 0, awayScore: 11, isFinished: true, homeScorers: "", awayScorers: "J. Burkhardt (4', 29', 41'), R. Koch (10'), A. Amaimouni (17'), C. Uzun (34', 56'), F. Baum (44'), Y. Ebnutalib (46'+1), M. Götze (49'+5), F. Chalabi (87')" },
-            { date: "21.08.2026", time: "20:45", home: "Hansa Rostock", away: "VfB Stuttgart", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "D. Pejcinovic (18', 37', 82'), T. Tomás (74')" },
-            { date: "22.08.2026", time: "13:00", home: "Energie Cottbus", away: "FC Augsburg", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "A. Kade (49'), K. Jakic (90'+5)" },
-            { date: "22.08.2026", time: "13:00", home: "SV Wehen Wiesbaden", away: "Bayer Leverkusen", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "P. Schick (43'), L. Vázquez (47'), N. Tella (69'), C. Kofane (79')" },
-            { date: "22.08.2026", time: "15:30", home: "FC Erzgebirge Aue", away: "TSG Hoffenheim", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "P. Wimmer (6', 45'+1), W. Burger (17'), M. Moerstedt (63')" },
-            { date: "22.08.2026", time: "15:30", home: "SV Hemelingen", away: "Hannover 96", homeScore: 1, awayScore: 9, isFinished: true, homeScorers: "L. Fikaj (56')", awayScorers: "S. Thórdarson (5', 19'), L. Gindorf (11', 39', 53'), M. Hartel (16'), B. Pichler (21', 88'), T. Etcibasi (90'+1)" },
-            { date: "22.08.2026", time: "15:30", home: "Lüneburger SK Hansa", away: "Werder Bremen", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "J. Stage (11'), N. Füllkrug (53' Pen), L. Reis (76')" },
-            { date: "22.08.2026", time: "15:30", home: "MSV Duisburg", away: "SV Elversberg", homeScore: 1, awayScore: 3, isFinished: true, homeScorers: "L. Lobinge (54')", awayScorers: "L. Schnellbacher (38'), F. Onyeka (88', 90'+1)" },
-            { date: "22.08.2026", time: "15:30", home: "Saarbrücken", away: "Hertha Berlin", homeScore: 1, awayScore: 1, isFinished: true, homeScorers: "P. Fahrner (90'+2)", awayScorers: "P. Seguin (69')" },
-            { date: "22.08.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "Arminia Bielefeld", homeScore: 3, awayScore: 0, isFinished: true, homeScorers: "T. Rahn (12'), M. Müller (45'), D. Schmidt (78')", awayScorers: "" },
-            { date: "22.08.2026", time: "18:00", home: "TSV 1860 München", away: "Holstein Kiel", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "F. Arp (22'), S. Skrzybski (81')" },
-            { date: "22.08.2026", time: "18:00", home: "Eintracht Trier", away: "RB Leipzig", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "L. Openda (14', 33'), X. Simons (42'), B. Šeško (61', 75'), C. Baumgartner (88')" },
-            { date: "23.08.2026", time: "13:00", home: "SSV Jeddeloh", away: "1. FC Heidenheim", homeScore: 5, awayScore: 2, isFinished: true, homeScorers: "J. Meyer (15', 44'), B. Schmidt (51'), T. Weber (70', 85')", awayScorers: "S. Conteh (28'), M. Pieringer (60')" },
-            { date: "23.08.2026", time: "13:00", home: "SpVgg Greuther Fürth", away: "VfL Bochum", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "J. Green (40')", awayScorers: "M. Boadu (12'), D. de Wit (77')" },
-            { date: "23.08.2026", time: "15:30", home: "Westfalia Rhynern", away: "Dynamo Dresden", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "C. Daferner (10', 34'), D. Kutschke (22'), S. Menzel (55'), J. Lemmer (72'), L. Meißner (89')" },
-            { date: "23.08.2026", time: "15:30", home: "TSV Schott Mainz", away: "Borussia Mönchengladbach", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "T. Kleindienst (8', 41'), R. Hack (25'), A. Plea (60'), F. Honorat (78')" },
-            { date: "23.08.2026", time: "15:30", home: "FC Carl Zeiss Jena", away: "SV Darmstadt 98", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "E. Löhmannsröben (31')", awayScorers: "I. Lidberg (45'), F. Hornby (80')" },
-            { date: "23.08.2026", time: "15:30", home: "Eintracht Braunschweig", away: "1. FC Union Berlin", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "R. Philippe (21'), S. Szabó (65')", awayScorers: "L. Tousart (14'), K. Volland (38', 71'), B. Hollerbach (82')" },
-            { date: "23.08.2026", time: "15:30", home: "VfB Krieschow", away: "1. FSV Mainz 05", homeScore: 0, awayScore: 9, isFinished: true, homeScorers: "", awayScorers: "J. Lee (11', 23'), N. Amiri (30'), A. Sieb (45', 52', 68'), P. Nebel (74'), S. Widmer (81'), A. Hanche-Olsen (88')" },
-            { date: "23.08.2026", time: "15:30", home: "Bahlinger SC", away: "1. FC Magdeburg", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "M. Kaars (19', 54'), B. Teixeira (62'), C. Atik (80')" },
-            { date: "23.08.2026", time: "18:00", home: "Rot-Weiss Essen", away: "FC St. Pauli", homeScore: 2, awayScore: 0, isFinished: true, homeScorers: "M. Voufack (42'), L. Müsel (75')", awayScorers: "" },
-            { date: "23.08.2026", time: "18:00", home: "1. FC Phönix Lübeck", away: "SC Paderborn", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "V. Ilidio (30'), H. Starck (71')", awayScorers: "S. Michel (12', 45'), K. Klefisch (60'), F. Bilbija (83')" },
-            { date: "23.08.2026", time: "18:00", home: "Fortuna Düsseldorf", away: "SC Freiburg", homeScore: 1, awayScore: 5, isFinished: true, homeScorers: "D. Kownacki (15')", awayScorers: "V. Grifo (22', 50'), L. Höler (44'), M. Eggestein (65'), J. Adamu (88')" },
-            { date: "24.08.2026", time: "18:00", home: "VSG Altglienicke", away: "VfL Wolfsburg", homeScore: 3, awayScore: 4, isFinished: true, homeScorers: "P. Breitkreuz (18'), C. Manske (55'), N. Inaler (92')", awayScorers: "L. Nmecha (25'), M. Arnold (60'), J. Wind (78'), L. Majer (112' n.V.)" },
-            { date: "24.08.2026", time: "18:00", home: "SC Verl", away: "Hamburger SV", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "R. Königsdörffer (14'), I. Pherai (52'), L. Reis (81')" },
-            { date: "24.08.2026", time: "18:00", home: "Würzburger Kickers", away: "1. FC Köln", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "S. Hägele (66')", awayScorers: "D. Huseinbasic (20'), L. Waldschmidt (58')" },
-            { date: "24.08.2026", time: "20:45", home: "Hallescher FC", away: "FC Schalke 04", homeScore: 2, awayScore: 5, isFinished: true, homeScorers: "J. Wolf (33'), T. Müller (70')", awayScorers: "K. Karaman (10', 45'), M. Sylla (55', 82'), T. Mohr (88')" },
-            { date: "01.09.2026", time: "20:45", home: "HEBC Hamburg", away: "Borussia Dortmund", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "S. Guirassy (15', 40'), K. Adeyemi (30'), D. Malen (62'), J. Bynoe-Gittens (85')" },
-            { date: "02.09.2026", time: "20:45", home: "VfL Osnabrück", away: "FC Bayern München", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "E. Engelhardt (72')", awayScorers: "H. Kane (12', 45'), J. Musiala (55'), M. Olise (80')" }
+            { date: "21.08.2026", time: "18:00", home: "Preußen Münster", away: "Karlsruher SC", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] M. Ndikom (35')", awayScorers: "[1:1] M. Wanitzek (69')<br>[1:2] S. Jung (81')" },
+            { date: "21.08.2026", time: "18:00", home: "SV Waldhof Mannheim", away: "1. FC Kaiserslautern", homeScore: 0, awayScore: 1, isFinished: true, homeScorers: "", awayScorers: "[0:1] I. Kanate (120')" },
+            { date: "21.08.2026", time: "18:00", home: "SC St. Tönis", away: "Eintracht Frankfurt", homeScore: 0, awayScore: 11, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Burkhardt (4')<br>[0:2] R. Koch (10')<br>[0:3] A. Amaimouni (17')<br>[0:4] J. Burkhardt (29')<br>[0:5] C. Uzun (34')<br>[0:6] J. Burkhardt (41')<br>[0:7] F. Baum (44')<br>[0:8] Y. Ebnutalib (46'+1)<br>[0:9] M. Götze (49'+5)<br>[0:10] C. Uzun (56')<br>[0:11] F. Chalabi (87')" },
+            { date: "21.08.2026", time: "20:45", home: "Hansa Rostock", away: "VfB Stuttgart", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] D. Pejcinovic (18')<br>[0:2] D. Pejcinovic (37')<br>[0:3] T. Tomás (74')<br>[0:4] D. Pejcinovic (82')" },
+            { date: "22.08.2026", time: "13:00", home: "Energie Cottbus", away: "FC Augsburg", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] A. Kade (49')<br>[0:2] K. Jakic (90'+5)" },
+            { date: "22.08.2026", time: "13:00", home: "SV Wehen Wiesbaden", away: "Bayer Leverkusen", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Schick (43')<br>[0:2] L. Vázquez (47')<br>[0:3] N. Tella (69')<br>[0:4] C. Kofane (79')" },
+            { date: "22.08.2026", time: "15:30", home: "FC Erzgebirge Aue", away: "TSG Hoffenheim", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Wimmer (6')<br>[0:2] W. Burger (17')<br>[0:3] P. Wimmer (45'+1)<br>[0:4] M. Moerstedt (63')" },
+            { date: "22.08.2026", time: "15:30", home: "SV Hemelingen", away: "Hannover 96", homeScore: 1, awayScore: 9, isFinished: true, homeScorers: "[1:5] L. Fikaj (56')", awayScorers: "[0:1] S. Thórdarson (5')<br>[0:2] L. Gindorf (11')<br>[0:3] M. Hartel (16')<br>[0:4] S. Thórdarson (19')<br>[0:5] B. Pichler (21')<br>[1:6] L. Gindorf (39')<br>[1:7] L. Gindorf (53')<br>[1:8] B. Pichler (88')<br>[1:9] T. Etcibasi (90'+1)" },
+            { date: "22.08.2026", time: "15:30", home: "Lüneburger SK Hansa", away: "Werder Bremen", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Stage (11')<br>[0:2] N. Füllkrug (53' Pen)<br>[0:3] L. Reis (76')" },
+            { date: "22.08.2026", time: "15:30", home: "MSV Duisburg", away: "SV Elversberg", homeScore: 1, awayScore: 3, isFinished: true, homeScorers: "[1:1] L. Lobinge (54')", awayScorers: "[0:1] L. Schnellbacher (38')<br>[1:2] F. Onyeka (88')<br>[1:3] F. Onyeka (90'+1)" },
+            { date: "22.08.2026", time: "15:30", home: "Saarbrücken", away: "Hertha Berlin", homeScore: 1, awayScore: 1, isFinished: true, homeScorers: "[1:1] P. Fahrner (90'+2)", awayScorers: "[0:1] P. Seguin (69')" },
+            { date: "22.08.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "Arminia Bielefeld", homeScore: 3, awayScore: 0, isFinished: true, homeScorers: "[1:0] T. Rahn (12')<br>[2:0] M. Müller (45')<br>[3:0] D. Schmidt (78')", awayScorers: "" },
+            { date: "22.08.2026", time: "18:00", home: "TSV 1860 München", away: "Holstein Kiel", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] F. Arp (22')<br>[0:2] S. Skrzybski (81')" },
+            { date: "22.08.2026", time: "18:00", home: "Eintracht Trier", away: "RB Leipzig", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] L. Openda (14')<br>[0:2] L. Openda (33')<br>[0:3] X. Simons (42')<br>[0:4] B. Šeško (61')<br>[0:5] B. Šeško (75')<br>[0:6] C. Baumgartner (88')" },
+            { date: "23.08.2026", time: "13:00", home: "SSV Jeddeloh", away: "1. FC Heidenheim", homeScore: 5, awayScore: 2, isFinished: true, homeScorers: "[1:0] J. Meyer (15')<br>[2:0] J. Meyer (44')<br>[3:1] B. Schmidt (51')<br>[4:2] T. Weber (70')<br>[5:2] T. Weber (85')", awayScorers: "[2:1] S. Conteh (28')<br>[3:2] M. Pieringer (60')" },
+            { date: "23.08.2026", time: "13:00", home: "SpVgg Greuther Fürth", away: "VfL Bochum", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:1] J. Green (40')", awayScorers: "[0:1] M. Boadu (12')<br>[1:2] D. de Wit (77')" },
+            { date: "23.08.2026", time: "15:30", home: "Westfalia Rhynern", away: "Dynamo Dresden", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] C. Daferner (10')<br>[0:2] D. Kutschke (22')<br>[0:3] C. Daferner (34')<br>[0:4] S. Menzel (55')<br>[0:5] J. Lemmer (72')<br>[0:6] L. Meißner (89')" },
+            { date: "23.08.2026", time: "15:30", home: "TSV Schott Mainz", away: "Borussia Mönchengladbach", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] T. Kleindienst (8')<br>[0:2] R. Hack (25')<br>[0:3] T. Kleindienst (41')<br>[0:4] A. Plea (60')<br>[0:5] F. Honorat (78')" },
+            { date: "23.08.2026", time: "15:30", home: "FC Carl Zeiss Jena", away: "SV Darmstadt 98", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] E. Löhmannsröben (31')", awayScorers: "[1:1] I. Lidberg (45')<br>[1:2] F. Hornby (80')" },
+            { date: "23.08.2026", time: "15:30", home: "Eintracht Braunschweig", away: "1. FC Union Berlin", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] R. Philippe (21')<br>[2:3] S. Szabó (65')", awayScorers: "[0:1] L. Tousart (14')<br>[1:2] K. Volland (38')<br>[1:3] K. Volland (71')<br>[2:4] B. Hollerbach (82')" },
+            { date: "23.08.2026", time: "15:30", home: "VfB Krieschow", away: "1. FSV Mainz 05", homeScore: 0, awayScore: 9, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Lee (11')<br>[0:2] J. Lee (23')<br>[0:3] N. Amiri (30')<br>[0:4] A. Sieb (45')<br>[0:5] A. Sieb (52')<br>[0:6] A. Sieb (68')<br>[0:7] P. Nebel (74')<br>[0:8] S. Widmer (81')<br>[0:9] A. Hanche-Olsen (88')" },
+            { date: "23.08.2026", time: "15:30", home: "Bahlinger SC", away: "1. FC Magdeburg", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] M. Kaars (19')<br>[0:2] M. Kaars (54')<br>[0:3] B. Teixeira (62')<br>[0:4] C. Atik (80')" },
+            { date: "23.08.2026", time: "18:00", home: "Rot-Weiss Essen", away: "FC St. Pauli", homeScore: 2, awayScore: 0, isFinished: true, homeScorers: "[1:0] M. Voufack (42')<br>[2:0] L. Müsel (75')", awayScorers: "" },
+            { date: "23.08.2026", time: "18:00", home: "1. FC Phönix Lübeck", away: "SC Paderborn", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] V. Ilidio (30')<br>[2:3] H. Starck (71')", awayScorers: "[0:1] S. Michel (12')<br>[1:2] S. Michel (45')<br>[2:3] K. Klefisch (60')<br>[2:4] F. Bilbija (83')" },
+            { date: "23.08.2026", time: "18:00", home: "Fortuna Düsseldorf", away: "SC Freiburg", homeScore: 1, awayScore: 5, isFinished: true, homeScorers: "[1:1] D. Kownacki (15')", awayScorers: "[0:1] V. Grifo (22')<br>[1:2] L. Höler (44')<br>[1:3] V. Grifo (50')<br>[1:4] M. Eggestein (65')<br>[1:5] J. Adamu (88')" },
+            { date: "24.08.2026", time: "18:00", home: "VSG Altglienicke", away: "VfL Wolfsburg", homeScore: 3, awayScore: 4, isFinished: true, homeScorers: "[1:0] P. Breitkreuz (18')<br>[2:2] C. Manske (55')<br>[3:3] N. Inaler (92')", awayScorers: "[1:1] L. Nmecha (25')<br>[1:2] M. Arnold (60')<br>[2:3] J. Wind (78')<br>[3:4] L. Majer (112' n.V.)" },
+            { date: "24.08.2026", time: "18:00", home: "SC Verl", away: "Hamburger SV", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] R. Königsdörffer (14')<br>[0:2] I. Pherai (52')<br>[0:3] L. Reis (81')" },
+            { date: "24.08.2026", time: "18:00", home: "Würzburger Kickers", away: "1. FC Köln", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:2] S. Hägele (66')", awayScorers: "[0:1] D. Huseinbasic (20')<br>[0:2] L. Waldschmidt (58')" },
+            { date: "24.08.2026", time: "20:45", home: "Hallescher FC", away: "FC Schalke 04", homeScore: 2, awayScore: 5, isFinished: true, homeScorers: "[1:1] J. Wolf (33')<br>[2:4] T. Müller (70')", awayScorers: "[0:1] K. Karaman (10')<br>[1:2] K. Karaman (45')<br>[1:3] M. Sylla (55')<br>[1:4] M. Sylla (82')<br>[2:5] T. Mohr (88')" },
+            { date: "01.09.2026", time: "20:45", home: "HEBC Hamburg", away: "Borussia Dortmund", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] S. Guirassy (15')<br>[0:2] K. Adeyemi (30')<br>[0:3] S. Guirassy (40')<br>[0:4] D. Malen (62')<br>[0:5] J. Bynoe-Gittens (85')" },
+            { date: "02.09.2026", time: "20:45", home: "VfL Osnabrück", away: "FC Bayern München", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "[1:3] E. Engelhardt (72')", awayScorers: "[0:1] H. Kane (12')<br>[0:2] H. Kane (45')<br>[0:3] J. Musiala (55')<br>[1:4] M. Olise (80')" }
         ],
         2: [
             { date: "27.10.2026", time: "18:00", home: "Rot-Weiss Essen", away: "RB Leipzig", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
@@ -683,13 +698,11 @@
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
             });
-            const p256dh = subscription.getKey('p256dh') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))) : '';
-            const auth = subscription.getKey('auth') ? btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))) : '';
+            const subJson = subscription.toJSON();
 
             const { error } = await supabaseClient.from('push_subscriptions_dfb').upsert({
-                endpoint: subscription.endpoint,
-                p256dh: p256dh,
-                auth: auth
+                endpoint: subJson.endpoint,
+                keys: subJson.keys
             }, { onConflict: 'endpoint' });
 
             if (error) {
@@ -767,17 +780,19 @@
 
             if (data && data.events) {
                 data.events.forEach(event => {
+                    const statusType = event.status.type.state;
+                    if (statusType !== 'in' && statusType !== 'post') return;
+
                     const comp = event.competitions[0];
                     const homeTeam = comp.competitors.find(c => c.homeAway === 'home');
                     const awayTeam = comp.competitors.find(c => c.awayAway === 'away');
                     
                     const hName = homeTeam.team.displayName;
-                    const aName = awayTeam.team.displayName;
-                    const hScore = parseInt(homeTeam.score) || 0;
-                    const aScore = parseInt(awayTeam.score) || 0;
-                    const statusType = event.status.type.state; // 'pre', 'in', 'post'
+                    const hScore = parseInt(homeTeam.score);
+                    const aScore = parseInt(awayTeam.score);
 
-                    // Torschützen-Details aus den Spieldetails ermitteln
+                    if (isNaN(hScore) || isNaN(aScore)) return;
+
                     let latestScorerText = "";
                     if (comp.details && comp.details.length > 0) {
                         const goalEvents = comp.details.filter(d => d.type && d.type.text && d.type.text.toLowerCase().includes('goal'));
@@ -787,7 +802,6 @@
                         }
                     }
 
-                    // Suche passendes Spiel in unseren Runden
                     for (let rId in pokalMatchesByRound) {
                         pokalMatchesByRound[rId].forEach(m => {
                             if (m.home.toLowerCase().includes(hName.toLowerCase().substring(0, 5)) || hName.toLowerCase().includes(m.home.toLowerCase().substring(0, 5))) {
@@ -803,7 +817,6 @@
                                     m.isLive = true;
                                 }
 
-                                // Bei neuem Tor Push inklusive Torschützen-Info senden
                                 if (statusType === 'in' && newTotal > oldTotal) {
                                     let pushBody = `${m.home} vs. ${m.away} — Neuer Spielstand: ${hScore}:${aScore}${latestScorerText}`;
                                     sendPushNotification("⚽ DFB-Pokal TOR!", pushBody);
@@ -825,72 +838,98 @@
             console.log("Live-Daten Abruf im Offline-Modus / Fallback aktiv");
         }
         renderMatches();
+        renderTopScorers();
+    }
+
+    function renderTopScorers() {
+        let container = document.getElementById('topScorersContainer');
+        container.innerHTML = '';
+
+        // Exakt 8 Top-Torschützen der laufenden Pokalrunde
+        const scorers = [
+            { name: "D. Pejcinovic", team: "VfB Stuttgart", goals: 3 },
+            { name: "L. Gindorf", team: "Hannover 96", goals: 3 },
+            { name: "A. Sieb", team: "1. FSV Mainz 05", goals: 3 },
+            { name: "J. Burkhardt", team: "Eintracht Frankfurt", goals: 3 },
+            { name: "S. Guirassy", team: "Borussia Dortmund", goals: 2 },
+            { name: "H. Kane", team: "FC Bayern München", goals: 2 },
+            { name: "M. Sylla", team: "FC Schalke 04", goals: 2 },
+            { name: "V. Grifo", team: "SC Freiburg", goals: 2 }
+        ];
+
+        scorers.forEach(s => {
+            let item = document.createElement('div');
+            item.className = 'scorer-item';
+            item.innerHTML = `
+                <div>
+                    <div class="scorer-name">${s.name}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">${s.team}</div>
+                </div>
+                <div class="scorer-goals">${s.goals} Tore</div>
+            `;
+            container.appendChild(item);
+        });
     }
 
     function renderMatches() {
-        let grid = document.getElementById('pokalMatchesGrid');
-        grid.innerHTML = '';
+        let tbody = document.getElementById('pokalTableBody');
+        tbody.innerHTML = '';
         let matches = pokalMatchesByRound[currentRoundId] || [];
 
         if (matches.length === 0) {
-            grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 30px;">Für diese Runde sind noch keine Spiele angesetzt oder erfasst.</div>';
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">Für diese Runde sind noch keine Spiele angesetzt oder erfasst.</td></tr>`;
             return;
         }
 
         matches.forEach(m => {
-            let hasResult = m.homeScore !== undefined && m.homeScore !== null && m.awayScore !== undefined && m.awayScore !== null;
+            let hasResult = (m.isFinished || m.isLive) && m.homeScore !== undefined && m.homeScore !== null && !isNaN(m.homeScore) && m.awayScore !== undefined && m.awayScore !== null && !isNaN(m.awayScore);
             let timeStr = m.time ? m.time + ' Uhr' : '';
 
-            let statusBadge = '';
+            let statusBadge = `<span style="background: rgba(236,72,153,0.15); color: var(--accent-gold); border: 1px solid rgba(251,191,36,0.3); padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; font-weight: bold;">[Endstand]</span>`;
             if (m.isLive) {
-                statusBadge = '<span class="match-status-badge live">LIVE</span>';
-            } else if (m.isFinished) {
-                statusBadge = '<span class="match-status-badge">ENDE</span>';
-            } else {
-                statusBadge = '<span style="color: var(--text-muted); font-size: 0.7rem;">Ansetzung</span>';
+                statusBadge = `<span style="background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(248,113,113,0.4); padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; font-weight: bold;" class="live-dot">🔴 LIVE</span>`;
+            } else if (!hasResult) {
+                statusBadge = `<span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Ausstehend</span>`;
             }
 
-            let homeScoreDisplay = hasResult ? m.homeScore : '-';
-            let awayScoreDisplay = hasResult ? m.awayScore : '-';
+            let scoreDisplay = hasResult ? `${m.homeScore}:${m.awayScore}` : '<span style="color: var(--text-muted); font-weight: normal; font-size: 0.95rem;">vs</span>';
 
-            let isHomeWinner = hasResult && m.isFinished && (m.homeScore > m.awayScore);
-            let isAwayWinner = hasResult && m.isFinished && (m.awayScore > m.homeScore);
-
-            let homeRowClass = isHomeWinner ? 'match-row winner' : 'match-row';
-            let awayRowClass = isAwayWinner ? 'match-row winner' : 'match-row';
-
-            let scorersHtml = '';
-            if (m.homeScorers || m.awayScorers) {
-                scorersHtml += '<div class="scorers-container">';
-                if (m.homeScorers) {
-                    scorersHtml += `<div>⚽ ${m.home}: ${m.homeScorers}</div>`;
+            let homeClass = "team-cell-home";
+            let awayClass = "team-cell-away";
+            if (hasResult && m.isFinished) {
+                if (m.homeScore > m.awayScore) {
+                    homeClass += " winner-team";
+                } else if (m.awayScore > m.homeScore) {
+                    awayClass += " winner-team";
                 }
-                if (m.awayScorers) {
-                    scorersHtml += `<div>⚽ ${m.away}: ${m.awayScorers}</div>`;
-                }
-                scorersHtml += '</div>';
             }
 
-            let card = document.createElement('div');
-            card.className = 'match-card';
-            card.innerHTML = `
-                <div class="match-card-header">
-                    <span>${m.date} — ${timeStr}</span>
-                    ${statusBadge}
-                </div>
-                <div class="match-body">
-                    <div class="${homeRowClass}">
-                        <div class="match-team"><span class="match-team-name">${m.home}</span></div>
-                        <div class="match-score">${homeScoreDisplay}</div>
-                    </div>
-                    <div class="${awayRowClass}">
-                        <div class="match-team"><span class="match-team-name">${m.away}</span></div>
-                        <div class="match-score">${awayScoreDisplay}</div>
-                    </div>
-                    ${scorersHtml}
-                </div>
+            let homeGoalsHtml = '';
+            let awayGoalsHtml = '';
+            if (hasResult && m.homeScorers) {
+                homeGoalsHtml = `<div class="goal-row-home">${m.homeScorers}</div>`;
+            }
+            if (hasResult && m.awayScorers) {
+                awayGoalsHtml = `<div class="goal-row-away">${m.awayScorers}</div>`;
+            }
+
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap;"><div>${m.date || ''}</div><div style="font-weight: bold; color: #fff;">${timeStr}</div></td>
+                <td>
+                    <div class="${homeClass}"><span>${m.home}</span></div>
+                    ${homeGoalsHtml}
+                </td>
+                <td style="text-align: center;">
+                    <div style="font-weight: 900; font-size: 1.1rem; color: #fff;">${scoreDisplay}</div>
+                    <div style="margin-top: 4px;">${statusBadge}</div>
+                </td>
+                <td>
+                    <div class="${awayClass}"><span>${m.away}</span></div>
+                    ${awayGoalsHtml}
+                </td>
             `;
-            grid.appendChild(card);
+            tbody.appendChild(tr);
         });
     }
 
@@ -902,9 +941,15 @@
         document.getElementById(modalId).style.display = 'none';
     }
 
+    window.onclick = function(e) {
+        if (e.target === document.getElementById('pastWinnersModal')) {
+            closeModal('pastWinnersModal');
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         loadPokalData();
-        // Alle 20 Sekunden Live-Ergebnisse prüfen und bei Toren automatisch Push mit Torschützen senden
+        renderTopScorers();
         setInterval(fetchLiveScores, 20000);
     });
 </script>

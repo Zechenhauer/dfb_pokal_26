@@ -600,38 +600,37 @@
 
     const pokalMatchesByRound = {
         1: [
-            // Beispiel mit integrierten Toren & Karten (⚽, 🟨, 🟨🟥, 🟥) zum Testen:
-            { date: "21.08.2026", time: "18:00", home: "Preußen Münster", away: "Karlsruher SC", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] M. Ndikom (35')<br>🟨 T. Müller (42')", awayScorers: "[1:1] M. Wanitzek (69')<br>[1:2] S. Jung (81')<br>🟨🟥 K. Eichner (85')<br>🟥 S. Jung (90')" },
+            { date: "21.08.2026", time: "18:00", home: "Preußen Münster", away: "Karlsruher SC", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] M. Ndikom (35')", awayScorers: "[1:1] M. Wanitzek (69')<br>[1:2] S. Jung (81')" },
             { date: "21.08.2026", time: "18:00", home: "SV Waldhof Mannheim", away: "1. FC Kaiserslautern", homeScore: 0, awayScore: 1, isFinished: true, homeScorers: "", awayScorers: "[0:1] I. Kanate (120')" },
-            { date: "21.08.2026", time: "18:00", home: "SC St. Tönis", away: "Eintracht Frankfurt", homeScore: 0, awayScore: 11, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Burkhardt (4')" },
-            { date: "21.08.2026", time: "20:45", home: "Hansa Rostock", away: "VfB Stuttgart", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] D. Pejcinovic (18')" },
-            { date: "22.08.2026", time: "13:00", home: "Energie Cottbus", away: "FC Augsburg", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] A. Kade (49')" },
-            { date: "22.08.2026", time: "13:00", home: "SV Wehen Wiesbaden", away: "Bayer Leverkusen", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Schick (43')" },
-            { date: "22.08.2026", time: "15:30", home: "FC Erzgebirge Aue", away: "TSG Hoffenheim", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Wimmer (6')" },
-            { date: "22.08.2026", time: "15:30", home: "SV Hemelingen", away: "Hannover 96", homeScore: 1, awayScore: 9, isFinished: true, homeScorers: "[1:5] L. Fikaj (56')", awayScorers: "[0:1] S. Thórdarson (5')" },
-            { date: "22.08.2026", time: "15:30", home: "Lüneburger SK Hansa", away: "Werder Bremen", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Stage (11')" },
-            { date: "22.08.2026", time: "15:30", home: "MSV Duisburg", away: "SV Elversberg", homeScore: 1, awayScore: 3, isFinished: true, homeScorers: "[1:1] L. Lobinge (54')", awayScorers: "[0:1] L. Schnellbacher (38')" },
+            { date: "21.08.2026", time: "18:00", home: "SC St. Tönis", away: "Eintracht Frankfurt", homeScore: 0, awayScore: 11, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Burkardt (4')<br>[0:2] R. Koch (10')<br>[0:3] A. Amaimouni (17')<br>[0:4] J. Burkardt (29')<br>[0:5] C. Uzun (34')<br>[0:6] C. Uzun (36')<br>[0:7] J. Burkardt (41')<br>[0:8] E. Baum (44')<br>[0:9] Y. Ebnoutalib (45+1')<br>[0:10] M. Götze (45+5')<br>[0:11] F. Chaibi (87')" },
+            { date: "21.08.2026", time: "20:45", home: "Hansa Rostock", away: "VfB Stuttgart", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] D. Pejcinovic (18')<br>[0:2] D. Pejcinovic (51')<br>[0:3] D. Pejcinovic (74')" },
+            { date: "22.08.2026", time: "13:00", home: "Energie Cottbus", away: "FC Augsburg", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] A. Kade (49')<br>[0:2] S. Essende (80')" },
+            { date: "22.08.2026", time: "13:00", home: "SV Wehen Wiesbaden", away: "Bayer Leverkusen", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Schick (22')<br>[0:2] P. Schick (43')<br>[0:3] V. Boniface (70')<br>[0:4] F. Wirtz (85')" },
+            { date: "22.08.2026", time: "15:30", home: "FC Erzgebirge Aue", away: "TSG Hoffenheim", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Wimmer (6')<br>[0:2] A. Kramaric (33')<br>[0:3] A. Kramaric (55')<br>[0:4] M. Bülter (88')" },
+            { date: "22.08.2026", time: "15:30", home: "SV Hemelingen", away: "Hannover 96", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "[1:4] L. Fikaj (56')", awayScorers: "[0:1] L. Gindorf (12')<br>[0:2] L. Gindorf (28')<br>[0:3] L. Gindorf (44')<br>[0:4] N. Tresoldi (50')" },
+            { date: "22.08.2026", time: "15:30", home: "Lüneburger SK Hansa", away: "Werder Bremen", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Stage (11')<br>[0:2] M. Ducksch (45')<br>[0:3] R. Schmid (78')" },
+            { date: "22.08.2026", time: "15:30", home: "MSV Duisburg", away: "SV Elversberg", homeScore: 1, awayScore: 3, isFinished: true, homeScorers: "[1:1] L. Lobinge (54')", awayScorers: "[0:1] L. Schnellbacher (38')<br>[1:2] F. Stock (65')<br>[1:3] T. Zimmerschied (82')" },
             { date: "22.08.2026", time: "15:30", home: "Saarbrücken", away: "Hertha Berlin", homeScore: 1, awayScore: 1, isFinished: true, homeScorers: "[1:1] P. Fahrner (90'+2)", awayScorers: "[0:1] P. Seguin (69')" },
-            { date: "22.08.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "Arminia Bielefeld", homeScore: 3, awayScore: 0, isFinished: true, homeScorers: "[1:0] T. Rahn (12')", awayScorers: "" },
-            { date: "22.08.2026", time: "18:00", home: "TSV 1860 München", away: "Holstein Kiel", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] F. Arp (22')" },
-            { date: "22.08.2026", time: "18:00", home: "Eintracht Trier", away: "RB Leipzig", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] L. Openda (14')" },
-            { date: "23.08.2026", time: "13:00", home: "SSV Jeddeloh", away: "1. FC Heidenheim", homeScore: 5, awayScore: 2, isFinished: true, homeScorers: "[1:0] J. Meyer (15')", awayScorers: "[2:1] S. Conteh (28')" },
-            { date: "23.08.2026", time: "13:00", home: "SpVgg Greuther Fürth", away: "VfL Bochum", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:1] J. Green (40')", awayScorers: "[0:1] M. Boadu (12')" },
-            { date: "23.08.2026", time: "15:30", home: "Westfalia Rhynern", away: "Dynamo Dresden", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] C. Daferner (10')" },
-            { date: "23.08.2026", time: "15:30", home: "TSV Schott Mainz", away: "Borussia Mönchengladbach", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] T. Kleindienst (8')" },
-            { date: "23.08.2026", time: "15:30", home: "FC Carl Zeiss Jena", away: "SV Darmstadt 98", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] E. Löhmannsröben (31')", awayScorers: "[1:1] I. Lidberg (45')" },
-            { date: "23.08.2026", time: "15:30", home: "Eintracht Braunschweig", away: "1. FC Union Berlin", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] R. Philippe (21')", awayScorers: "[0:1] L. Tousart (14')" },
-            { date: "23.08.2026", time: "15:30", home: "VfB Krieschow", away: "1. FSV Mainz 05", homeScore: 0, awayScore: 9, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Lee (11')" },
-            { date: "23.08.2026", time: "15:30", home: "Bahlinger SC", away: "1. FC Magdeburg", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] M. Kaars (19')" },
-            { date: "23.08.2026", time: "18:00", home: "Rot-Weiss Essen", away: "FC St. Pauli", homeScore: 2, awayScore: 0, isFinished: true, homeScorers: "[1:0] M. Voufack (42')", awayScorers: "" },
-            { date: "23.08.2026", time: "18:00", home: "1. FC Phönix Lübeck", away: "SC Paderborn", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] V. Ilidio (30')", awayScorers: "[0:1] S. Michel (12')" },
-            { date: "23.08.2026", time: "18:00", home: "Fortuna Düsseldorf", away: "SC Freiburg", homeScore: 1, awayScore: 5, isFinished: true, homeScorers: "[1:1] D. Kownacki (15')", awayScorers: "[0:1] V. Grifo (22')" },
-            { date: "24.08.2026", time: "18:00", home: "VSG Altglienicke", away: "VfL Wolfsburg", homeScore: 3, awayScore: 4, isFinished: true, homeScorers: "[1:0] P. Breitkreuz (18')", awayScorers: "[1:1] L. Nmecha (25')" },
-            { date: "24.08.2026", time: "18:00", home: "SC Verl", away: "Hamburger SV", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] R. Königsdörffer (14')" },
-            { date: "24.08.2026", time: "18:00", home: "Würzburger Kickers", away: "1. FC Köln", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:2] S. Hägele (66')", awayScorers: "[0:1] D. Huseinbasic (20')" },
-            { date: "24.08.2026", time: "20:45", home: "Hallescher FC", away: "FC Schalke 04", homeScore: 2, awayScore: 5, isFinished: true, homeScorers: "[1:1] J. Wolf (33')", awayScorers: "[0:1] K. Karaman (10')" },
-            { date: "01.09.2026", time: "20:45", home: "HEBC Hamburg", away: "Borussia Dortmund", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] S. Guirassy (15')" },
-            { date: "02.09.2026", time: "20:45", home: "VfL Osnabrück", away: "FC Bayern München", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "[1:3] E. Engelhardt (72')", awayScorers: "[0:1] H. Kane (12')" }
+            { date: "22.08.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "Arminia Bielefeld", homeScore: 1, awayScore: 0, isFinished: true, homeScorers: "[1:0] T. Rahn (12')", awayScorers: "" },
+            { date: "22.08.2026", time: "18:00", home: "TSV 1860 München", away: "Holstein Kiel", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] F. Arp (22')<br>[0:2] S. Skrzybski (76')" },
+            { date: "22.08.2026", time: "18:00", home: "Eintracht Trier", away: "RB Leipzig", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] L. Openda (14')<br>[0:2] L. Openda (31')<br>[0:3] B. Šeško (50')<br>[0:4] B. Šeško (63')<br>[0:5] X. Simons (75')<br>[0:6] A. Nusa (88')" },
+            { date: "23.08.2026", time: "13:00", home: "SSV Jeddeloh", away: "1. FC Heidenheim", homeScore: 2, awayScore: 1, isFinished: true, homeScorers: "[1:0] J. Meyer (15')<br>[2:1] M. Schmakedick (72')", awayScorers: "[1:1] S. Conteh (28')" },
+            { date: "23.08.2026", time: "13:00", home: "SpVgg Greuther Fürth", away: "VfL Bochum", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:1] J. Green (40')", awayScorers: "[0:1] M. Boadu (12')<br>[1:2] D. de Wit (75')" },
+            { date: "23.08.2026", time: "15:30", home: "Westfalia Rhynern", away: "Dynamo Dresden", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] C. Daferner (10')<br>[0:2] C. Daferner (25')<br>[0:3] S. Kutschke (40')<br>[0:4] J. Lemmer (55')<br>[0:5] T. Meißner (70')<br>[0:6] D. Şahin (84')" },
+            { date: "23.08.2026", time: "15:30", home: "TSV Schott Mainz", away: "Borussia Mönchengladbach", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] T. Kleindienst (8')<br>[0:2] T. Kleindienst (34')<br>[0:3] F. Honorat (51')<br>[0:4] A. Plea (68')<br>[0:5] T. Cvancara (89')" },
+            { date: "23.08.2026", time: "15:30", home: "FC Carl Zeiss Jena", away: "SV Darmstadt 98", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] E. Löhmannsröben (31')", awayScorers: "[1:1] I. Lidberg (45')<br>[1:2] F. Förster (78')" },
+            { date: "23.08.2026", time: "15:30", home: "Eintracht Braunschweig", away: "1. FC Union Berlin", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] R. Philippe (21')<br>[2:3] S. Szabó (65')", awayScorers: "[0:1] L. Tousart (14')<br>[1:2] B. Hollerbach (44')<br>[1:3] Y. Vertessen (58')<br>[2:4] D. Doekhi (88')" },
+            { date: "23.08.2026", time: "15:30", home: "VfB Krieschow", away: "1. FSV Mainz 05", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Lee (11')<br>[0:2] A. Sieb (33')<br>[0:3] A. Sieb (52')<br>[0:4] A. Sieb (67')<br>[0:5] N. Amiri (82')" },
+            { date: "23.08.2026", time: "15:30", home: "Bahlinger SC", away: "1. FC Magdeburg", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] M. Kaars (19')<br>[0:2] M. Kaars (42')<br>[0:3] B. Atik (60')<br>[0:4] L. El Hankouri (85')" },
+            { date: "23.08.2026", time: "18:00", home: "Rot-Weiss Essen", away: "FC St. Pauli", homeScore: 2, awayScore: 0, isFinished: true, homeScorers: "[1:0] M. Voufack (42')<br>[2:0] J. Safi (79')", awayScorers: "" },
+            { date: "23.08.2026", time: "18:00", home: "1. FC Phönix Lübeck", away: "SC Paderborn", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] V. Ilidio (30')<br>[2:3] J. Berger (64')", awayScorers: "[0:1] S. Michel (12')<br>[1:2] K. Klaas (45')<br>[1:3] F. Bilbija (58')<br>[2:4] A. Grimaldi (88')" },
+            { date: "23.08.2026", time: "18:00", home: "Fortuna Düsseldorf", away: "SC Freiburg", homeScore: 1, awayScore: 5, isFinished: true, homeScorers: "[1:1] D. Kownacki (15')", awayScorers: "[0:1] V. Grifo (22')<br>[1:2] V. Grifo (48')<br>[1:3] L. Höler (60')<br>[1:4] M. Eggestein (74')<br>[1:5] J. Adamu (89')" },
+            { date: "24.08.2026", time: "18:00", home: "VSG Altglienicke", away: "VfL Wolfsburg", homeScore: 3, awayScore: 4, isFinished: true, homeScorers: "[1:0] P. Breitkreuz (18')<br>[2:2] C. Manske (45')", awayScorers: "[1:1] L. Nmecha (25')<br>[1:2] J. Wind (38')<br>[2:3] M. Amoura (62')<br>[3:4] P. Wimmer (88')" },
+            { date: "24.08.2026", time: "18:00", home: "SC Verl", away: "Hamburger SV", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] R. Königsdörffer (14')<br>[0:2] D. Selke (52')<br>[0:3] I. Pherai (80')" },
+            { date: "24.08.2026", time: "18:00", home: "Würzburger Kickers", away: "1. FC Köln", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:2] S. Hägele (66')", awayScorers: "[0:1] D. Huseinbasic (20')<br>[0:2] T. Lemperle (45')" },
+            { date: "24.08.2026", time: "20:45", home: "Hallescher FC", away: "FC Schalke 04", homeScore: 2, awayScore: 5, isFinished: true, homeScorers: "[1:1] J. Wolf (33')<br>[2:4] T. Berger (78')", awayScorers: "[0:1] K. Karaman (10')<br>[1:2] M. Sylla (41')<br>[1:3] M. Sylla (55')<br>[1:4] T. Mohr (68')<br>[2:5] E. Aydın (89')" },
+            { date: "01.09.2026", time: "20:45", home: "HEBC Hamburg", away: "Borussia Dortmund", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] S. Guirassy (15')<br>[0:2] S. Guirassy (38')<br>[0:3] K. Adeyemi (50')<br>[0:4] D. Malen (72')<br>[0:5] J. Brandt (86')" },
+            { date: "02.09.2026", time: "20:45", home: "VfL Osnabrück", away: "FC Bayern München", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "[1:3] E. Engelhardt (72')", awayScorers: "[0:1] H. Kane (12')<br>[0:2] H. Kane (30')<br>[0:3] M. Olise (55')<br>[1:4] J. Musiala (84')" }
         ],
         2: [
             { date: "27.10.2026", time: "18:00", home: "Rot-Weiss Essen", away: "RB Leipzig", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
@@ -807,24 +806,6 @@
                                     if (d.team?.id === homeTeam.team.id) homeEventsList.push(goalStr);
                                     else if (d.team?.id === awayTeam.team.id) awayEventsList.push(goalStr);
                                 }
-                            } else if (typeText.includes("yellow-red") || typeText.includes("gelb-rot")) {
-                                if (playerName) {
-                                    let yellowRedStr = `🟨🟥 ${playerName}${minute}`;
-                                    if (d.team?.id === homeTeam.team.id) homeEventsList.push(yellowRedStr);
-                                    else if (d.team?.id === awayTeam.team.id) awayEventsList.push(yellowRedStr);
-                                }
-                            } else if (typeText.includes("yellow") || typeText.includes("gelbe karte")) {
-                                if (playerName) {
-                                    let yellowStr = `🟨 ${playerName}${minute}`;
-                                    if (d.team?.id === homeTeam.team.id) homeEventsList.push(yellowStr);
-                                    else if (d.team?.id === awayTeam.team.id) awayEventsList.push(yellowStr);
-                                }
-                            } else if (typeText.includes("red") || typeText.includes("rote karte")) {
-                                if (playerName) {
-                                    let redStr = `🟥 ${playerName}${minute}`;
-                                    if (d.team?.id === homeTeam.team.id) homeEventsList.push(redStr);
-                                    else if (d.team?.id === awayTeam.team.id) awayEventsList.push(redStr);
-                                }
                             }
                         });
                     }
@@ -875,25 +856,52 @@
 
     function renderTopScorers() {
         let container = document.getElementById('topScorersContainer');
+        if (!container) return;
         container.innerHTML = '';
 
-        const scorers = [
-            { name: "D. Pejcinovic", team: "VfB Stuttgart", goals: 3 },
-            { name: "L. Gindorf", team: "Hannover 96", goals: 3 },
-            { name: "A. Sieb", team: "1. FSV Mainz 05", goals: 3 },
-            { name: "J. Burkhardt", team: "Eintracht Frankfurt", goals: 3 },
-            { name: "S. Guirassy", team: "Borussia Dortmund", goals: 2 },
-            { name: "H. Kane", team: "FC Bayern München", goals: 2 },
-            { name: "M. Sylla", team: "FC Schalke 04", goals: 2 },
-            { name: "V. Grifo", team: "SC Freiburg", goals: 2 }
-        ];
+        let scorersMap = {};
+        
+        for (let rId in pokalMatchesByRound) {
+            pokalMatchesByRound[rId].forEach(m => {
+                const extractScorers = (scorerString, teamName) => {
+                    if (!scorerString || typeof scorerString !== 'string') return;
+                    let lines = scorerString.split('<br>');
+                    lines.forEach(line => {
+                        let clean = line.replace(/\[.*?\]/g, '').trim();
+                        // Entferne evtl. führende Emojis oder Leerzeichen
+                        clean = clean.replace('⚽', '').trim();
+                        let idx = clean.lastIndexOf('(');
+                        if (idx > 0) {
+                            clean = clean.substring(0, idx).trim();
+                        }
+                        if (clean.length > 0) {
+                            let key = clean + "_" + teamName;
+                            if (!scorersMap[key]) {
+                                scorersMap[key] = { name: clean, team: teamName, goals: 0 };
+                            }
+                            scorersMap[key].goals++;
+                        }
+                    });
+                };
 
-        scorers.forEach(s => {
+                extractScorers(m.homeScorers, m.home);
+                extractScorers(m.awayScorers, m.away);
+            });
+        }
+
+        let sortedScorers = Object.values(scorersMap).sort((a, b) => b.goals - a.goals);
+
+        if (sortedScorers.length === 0) {
+            container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; padding: 5px;">Noch keine Torschützen erfasst.</div>`;
+            return;
+        }
+
+        sortedScorers.slice(0, 8).forEach(s => {
             let item = document.createElement('div');
             item.className = 'scorer-item';
             item.innerHTML = `
                 <div>
-                    <div class="scorer-name">${s.name}</div>
+                    <div class="scorer-name">⚽ ${s.name}</div>
                     <div style="font-size: 0.7rem; color: var(--text-muted);">${s.team}</div>
                 </div>
                 <div class="scorer-goals">${s.goals} Tore</div>
@@ -904,6 +912,7 @@
 
     function renderMatches() {
         let tbody = document.getElementById('pokalTableBody');
+        if (!tbody) return;
         tbody.innerHTML = '';
         let matches = pokalMatchesByRound[currentRoundId] || [];
 

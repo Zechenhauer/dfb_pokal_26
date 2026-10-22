@@ -47,6 +47,74 @@
             box-shadow: 0 10px 40px rgba(139, 92, 246, 0.15);
         }
 
+        /* LAUFBAND / TICKER STYLES */
+        .ticker-wrapper {
+            width: 100%;
+            background: #000000;
+            border: 1px solid var(--neon-purple);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            height: 36px;
+            position: relative;
+        }
+        .ticker-label {
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 0 12px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .ticker-content-box {
+            overflow: hidden;
+            white-space: nowrap;
+            flex: 1;
+            position: relative;
+        }
+        .ticker-track {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker-scroll 150s linear infinite;
+            font-size: 0.85rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+        .ticker-item {
+            display: inline-block;
+            padding: 0 30px;
+            color: #ffffff;
+        }
+        .ticker-item span {
+            color: #ffffff;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        /* Dezente Highlight-Markierung für Bayern-Spiele im Ticker */
+        .ticker-highlight-bayern {
+            background: rgba(236, 72, 153, 0.25);
+            border-top: 1px solid var(--neon-pink);
+            border-bottom: 1px solid var(--neon-pink);
+            padding-top: 2px;
+            padding-bottom: 2px;
+            border-radius: 4px;
+        }
+        @keyframes ticker-scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
         .header-title-area {
             display: flex;
             align-items: center;
@@ -408,6 +476,16 @@
 <body>
 
 <div class="container">
+    <!-- LAUFBAND / LIVE-TICKER OBEN -->
+    <div class="ticker-wrapper">
+        <div class="ticker-label" id="tickerLabel">⚽ Ticker</div>
+        <div class="ticker-content-box">
+            <div class="ticker-track" id="tickerTrack">
+                <span class="ticker-item">Lade aktuelle Pokal-Spielstände und Tore...</span>
+            </div>
+        </div>
+    </div>
+
     <div class="header-title-area">
         <h2>DFB-<span>POKAL</span></h2>
     </div>
@@ -597,6 +675,7 @@
     let isAdmin = false;
     let currentRoundId = 1;
     let previousScores = {};
+    let latestLiveGoalsTicker = [];
 
     const pokalMatchesByRound = {
         1: [
@@ -766,6 +845,7 @@
         if (btnElement) btnElement.classList.add('active');
         document.getElementById('roundTableHeader').textContent = (roundTitles[roundId] || 'Runde ' + roundId) + ' — Spiele & Ergebnisse';
         renderMatches();
+        updateTicker();
     }
 
     async function fetchLiveScores() {
@@ -773,6 +853,7 @@
             const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/ger.dfb_pokal/scoreboard');
             const data = await response.json();
             let hasLiveGames = false;
+            latestLiveGoalsTicker = [];
 
             if (data && data.events) {
                 data.events.forEach(event => {
@@ -784,13 +865,13 @@
                     const awayTeam = comp.competitors.find(c => c.awayAway === 'away');
                     
                     const hName = homeTeam.team.displayName;
+                    const aName = awayTeam.team.displayName;
                     const hScore = parseInt(homeTeam.score);
                     const aScore = parseInt(awayTeam.score);
 
                     if (isNaN(hScore) || isNaN(aScore)) return;
 
                     let displayClock = event.status?.displayClock || "";
-
                     let homeEventsList = [];
                     let awayEventsList = [];
 
@@ -798,13 +879,26 @@
                         comp.details.forEach(d => {
                             let typeText = (d.type && d.type.text) ? d.type.text.toLowerCase() : "";
                             let playerName = d.athletesInvolved?.[0]?.displayName || d.player?.displayName || d.athlete?.displayName || '';
-                            let minute = d.clock?.displayValue ? ` (${d.clock.displayValue})` : '';
+                            let minute = d.clock?.displayValue ? ` (${d.clock.displayValue}')` : '';
 
                             if (d.scoringPlay || typeText.includes("goal")) {
                                 if (playerName) {
                                     let goalStr = `⚽ ${playerName}${minute}`;
-                                    if (d.team?.id === homeTeam.team.id) homeEventsList.push(goalStr);
-                                    else if (d.team?.id === awayTeam.team.id) awayEventsList.push(goalStr);
+                                    if (d.team?.id === homeTeam.team.id) {
+                                        homeEventsList.push(goalStr);
+                                        if (statusType === 'in') {
+                                            let isBayern = hName.includes("Bayern") || aName.includes("Bayern");
+                                            let hl = isBayern ? ' ticker-highlight-bayern' : '';
+                                            latestLiveGoalsTicker.push(`<span class="ticker-item${hl}">⚽ ${hName}: ${playerName} ${minute} <span>${hName} ${hScore}:${aScore} ${aName}</span></span>`);
+                                        }
+                                    } else {
+                                        awayEventsList.push(goalStr);
+                                        if (statusType === 'in') {
+                                            let isBayern = hName.includes("Bayern") || aName.includes("Bayern");
+                                            let hl = isBayern ? ' ticker-highlight-bayern' : '';
+                                            latestLiveGoalsTicker.push(`<span class="ticker-item${hl}">⚽ ${aName}: ${playerName} ${minute} <span>${hName} ${hScore}:${aScore} ${aName}</span></span>`);
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -852,6 +946,42 @@
         }
         renderMatches();
         renderTopScorers();
+        updateTicker();
+    }
+
+    // TICKER AKTUALISIERUNG MIT BAYERN-HIGHLIGHT & DYNAMISCHEM LABEL
+    function updateTicker() {
+        let tickerItems = [];
+        let labelText = "⚽ Ticker";
+
+        if (latestLiveGoalsTicker.length > 0) {
+            tickerItems = latestLiveGoalsTicker;
+            labelText = "⚽ LIVE-TORE";
+        } else {
+            let matches = pokalMatchesByRound[currentRoundId] || [];
+            let rTitle = roundTitles[currentRoundId] || ('Runde ' + currentRoundId);
+            labelText = `⚽ ${rTitle.toUpperCase()} (ERGEBNISSE)`;
+
+            matches.forEach(m => {
+                let score = (m.homeScore !== null && m.homeScore !== undefined) ? `${m.homeScore}:${m.awayScore}` : 'vs';
+                let status = m.isLive ? '🔴 LIVE' : (m.isFinished ? 'Endstand' : m.time || '');
+                
+                let isBayern = m.home.includes("Bayern") || m.away.includes("Bayern");
+                let highlightClass = isBayern ? ' ticker-highlight-bayern' : '';
+                
+                tickerItems.push(`<span class="ticker-item${highlightClass}">${m.home} - ${m.away} <span>${score}</span> (${status})</span>`);
+            });
+        }
+
+        const tickerLabelElem = document.getElementById('tickerLabel');
+        if (tickerLabelElem) {
+            tickerLabelElem.textContent = labelText;
+        }
+
+        const tickerTrack = document.getElementById('tickerTrack');
+        if (tickerTrack) {
+            tickerTrack.innerHTML = tickerItems.length > 0 ? tickerItems.join('') : `<span class="ticker-item">Keine Spiele im Ticker verfügbar.</span>`;
+        }
     }
 
     function renderTopScorers() {
@@ -868,7 +998,6 @@
                     let lines = scorerString.split('<br>');
                     lines.forEach(line => {
                         let clean = line.replace(/\[.*?\]/g, '').trim();
-                        // Entferne evtl. führende Emojis oder Leerzeichen
                         clean = clean.replace('⚽', '').trim();
                         let idx = clean.lastIndexOf('(');
                         if (idx > 0) {
@@ -991,6 +1120,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         loadPokalData();
         renderTopScorers();
+        updateTicker();
         setInterval(fetchLiveScores, 20000);
     });
 </script>

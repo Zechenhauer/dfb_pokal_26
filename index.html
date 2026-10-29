@@ -672,10 +672,9 @@
     let previousScores = {};
     let latestLiveGoalsTicker = [];
 
-    // Definiere die offiziellen Spieltage / Datumswerte für die Runden zur Abfrage über ESPN
     const roundDatesMap = {
         1: ["20260821", "20260822", "20260823", "20260824", "20260901", "20260902"],
-        2: ["20261027", "20261028"], // Termine der 2. Hauptrunde (Okt 2026)
+        2: ["20261027", "20261028"],
         3: [],
         4: [],
         5: [],
@@ -746,6 +745,7 @@
         }
     }
 
+    // KORRIGIERT: Übermittelt jetzt exakt 'push_subscriptions_dfb' an die Edge Function!
     async function sendPushNotification(title, body) {
         try {
             const targetUrl = SUPABASE_URL + '/functions/v1/send-push';
@@ -764,7 +764,6 @@
         }
     }
 
-    // Funktion zum Eintragen von Live-Toren in deine sent_goals_dfb Tabelle
     async function logGoalToSupabase(matchInfo, scorer, score) {
         try {
             await supabaseClient.from('sent_goals_dfb').insert([

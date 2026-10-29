@@ -730,9 +730,11 @@
             });
             const subJson = subscription.toJSON();
 
+            // KORRIGIERT: Flache Übergabe (p256dh & auth), passend zur Edge Function!
             const { error } = await supabaseClient.from('push_subscriptions_dfb').upsert({
                 endpoint: subJson.endpoint,
-                keys: subJson.keys
+                p256dh: subJson.keys.p256dh,
+                auth: subJson.keys.auth
             }, { onConflict: 'endpoint' });
 
             if (error) {

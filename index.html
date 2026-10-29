@@ -101,7 +101,6 @@
             font-weight: bold;
             margin-left: 6px;
         }
-        /* Dezente Highlight-Markierung für Bayern-Spiele im Ticker */
         .ticker-highlight-bayern {
             background: rgba(236, 72, 153, 0.25);
             border-top: 1px solid var(--neon-pink);
@@ -272,7 +271,6 @@
         }
         .header-action-btn:hover { background: rgba(0, 0, 0, 0.5); border-color: var(--accent-gold); color: var(--accent-gold); }
 
-        /* TORSCHÜTZEN KLARE LISTE */
         .scorers-preview {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -299,7 +297,6 @@
             border: 1px solid rgba(16, 185, 129, 0.4);
         }
 
-        /* TABELLEN-DESIGN FÜR SPIELE */
         .table-container {
             width: 100%;
             overflow-x: auto;
@@ -372,7 +369,6 @@
             line-height: 1.3;
         }
 
-        /* ADMIN BEREICH */
         .admin-toggle-wrapper {
             text-align: right;
             margin-top: 20px;
@@ -418,7 +414,6 @@
         }
         .btn:hover { opacity: 0.9; }
 
-        /* MODAL STYLES */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -481,7 +476,7 @@
         <div class="ticker-label" id="tickerLabel">⚽ Ticker</div>
         <div class="ticker-content-box">
             <div class="ticker-track" id="tickerTrack">
-                <span class="ticker-item">Lade aktuelle Pokal-Spielstände und Tore...</span>
+                <span class="ticker-item">Lade aktuelle Pokal-Spielstände und Tore via ESPN...</span>
             </div>
         </div>
     </div>
@@ -489,11 +484,11 @@
     <div class="header-title-area">
         <h2>DFB-<span>POKAL</span></h2>
     </div>
-    <div class="subtitle">Saison 2026/27 — Live-Spielplan & Torschützen</div>
+    <div class="subtitle">Saison 2026/27 — Live-Spielplan & Torschützen via ESPN API</div>
     
     <div class="meta-info">
         <span>⚡ Web-App & Management: Jürgen Schützendorf</span>
-        <span class="supabase-badge">● Push-Service aktiv</span>
+        <span class="supabase-badge">● ESPN API & Push aktiv</span>
         <div class="live-badge" id="liveIndicatorBadge"><span class="live-dot"></span> LIVE-SPIELE LÄUFT</div>
     </div>
 
@@ -677,58 +672,20 @@
     let previousScores = {};
     let latestLiveGoalsTicker = [];
 
-    const pokalMatchesByRound = {
-        1: [
-            { date: "21.08.2026", time: "18:00", home: "Preußen Münster", away: "Karlsruher SC", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] M. Ndikom (35')", awayScorers: "[1:1] M. Wanitzek (69')<br>[1:2] S. Jung (81')" },
-            { date: "21.08.2026", time: "18:00", home: "SV Waldhof Mannheim", away: "1. FC Kaiserslautern", homeScore: 0, awayScore: 1, isFinished: true, homeScorers: "", awayScorers: "[0:1] I. Kanate (120')" },
-            { date: "21.08.2026", time: "18:00", home: "SC St. Tönis", away: "Eintracht Frankfurt", homeScore: 0, awayScore: 11, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Burkardt (4')<br>[0:2] R. Koch (10')<br>[0:3] A. Amaimouni (17')<br>[0:4] J. Burkardt (29')<br>[0:5] C. Uzun (34')<br>[0:6] C. Uzun (36')<br>[0:7] J. Burkardt (41')<br>[0:8] E. Baum (44')<br>[0:9] Y. Ebnoutalib (45+1')<br>[0:10] M. Götze (45+5')<br>[0:11] F. Chaibi (87')" },
-            { date: "21.08.2026", time: "20:45", home: "Hansa Rostock", away: "VfB Stuttgart", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] D. Pejcinovic (18')<br>[0:2] D. Pejcinovic (51')<br>[0:3] D. Pejcinovic (74')" },
-            { date: "22.08.2026", time: "13:00", home: "Energie Cottbus", away: "FC Augsburg", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] A. Kade (49')<br>[0:2] S. Essende (80')" },
-            { date: "22.08.2026", time: "13:00", home: "SV Wehen Wiesbaden", away: "Bayer Leverkusen", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Schick (22')<br>[0:2] P. Schick (43')<br>[0:3] V. Boniface (70')<br>[0:4] F. Wirtz (85')" },
-            { date: "22.08.2026", time: "15:30", home: "FC Erzgebirge Aue", away: "TSG Hoffenheim", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] P. Wimmer (6')<br>[0:2] A. Kramaric (33')<br>[0:3] A. Kramaric (55')<br>[0:4] M. Bülter (88')" },
-            { date: "22.08.2026", time: "15:30", home: "SV Hemelingen", away: "Hannover 96", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "[1:4] L. Fikaj (56')", awayScorers: "[0:1] L. Gindorf (12')<br>[0:2] L. Gindorf (28')<br>[0:3] L. Gindorf (44')<br>[0:4] N. Tresoldi (50')" },
-            { date: "22.08.2026", time: "15:30", home: "Lüneburger SK Hansa", away: "Werder Bremen", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Stage (11')<br>[0:2] M. Ducksch (45')<br>[0:3] R. Schmid (78')" },
-            { date: "22.08.2026", time: "15:30", home: "MSV Duisburg", away: "SV Elversberg", homeScore: 1, awayScore: 3, isFinished: true, homeScorers: "[1:1] L. Lobinge (54')", awayScorers: "[0:1] L. Schnellbacher (38')<br>[1:2] F. Stock (65')<br>[1:3] T. Zimmerschied (82')" },
-            { date: "22.08.2026", time: "15:30", home: "Saarbrücken", away: "Hertha Berlin", homeScore: 1, awayScore: 1, isFinished: true, homeScorers: "[1:1] P. Fahrner (90'+2)", awayScorers: "[0:1] P. Seguin (69')" },
-            { date: "22.08.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "Arminia Bielefeld", homeScore: 1, awayScore: 0, isFinished: true, homeScorers: "[1:0] T. Rahn (12')", awayScorers: "" },
-            { date: "22.08.2026", time: "18:00", home: "TSV 1860 München", away: "Holstein Kiel", homeScore: 0, awayScore: 2, isFinished: true, homeScorers: "", awayScorers: "[0:1] F. Arp (22')<br>[0:2] S. Skrzybski (76')" },
-            { date: "22.08.2026", time: "18:00", home: "Eintracht Trier", away: "RB Leipzig", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] L. Openda (14')<br>[0:2] L. Openda (31')<br>[0:3] B. Šeško (50')<br>[0:4] B. Šeško (63')<br>[0:5] X. Simons (75')<br>[0:6] A. Nusa (88')" },
-            { date: "23.08.2026", time: "13:00", home: "SSV Jeddeloh", away: "1. FC Heidenheim", homeScore: 2, awayScore: 1, isFinished: true, homeScorers: "[1:0] J. Meyer (15')<br>[2:1] M. Schmakedick (72')", awayScorers: "[1:1] S. Conteh (28')" },
-            { date: "23.08.2026", time: "13:00", home: "SpVgg Greuther Fürth", away: "VfL Bochum", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:1] J. Green (40')", awayScorers: "[0:1] M. Boadu (12')<br>[1:2] D. de Wit (75')" },
-            { date: "23.08.2026", time: "15:30", home: "Westfalia Rhynern", away: "Dynamo Dresden", homeScore: 0, awayScore: 6, isFinished: true, homeScorers: "", awayScorers: "[0:1] C. Daferner (10')<br>[0:2] C. Daferner (25')<br>[0:3] S. Kutschke (40')<br>[0:4] J. Lemmer (55')<br>[0:5] T. Meißner (70')<br>[0:6] D. Şahin (84')" },
-            { date: "23.08.2026", time: "15:30", home: "TSV Schott Mainz", away: "Borussia Mönchengladbach", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] T. Kleindienst (8')<br>[0:2] T. Kleindienst (34')<br>[0:3] F. Honorat (51')<br>[0:4] A. Plea (68')<br>[0:5] T. Cvancara (89')" },
-            { date: "23.08.2026", time: "15:30", home: "FC Carl Zeiss Jena", away: "SV Darmstadt 98", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:0] E. Löhmannsröben (31')", awayScorers: "[1:1] I. Lidberg (45')<br>[1:2] F. Förster (78')" },
-            { date: "23.08.2026", time: "15:30", home: "Eintracht Braunschweig", away: "1. FC Union Berlin", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] R. Philippe (21')<br>[2:3] S. Szabó (65')", awayScorers: "[0:1] L. Tousart (14')<br>[1:2] B. Hollerbach (44')<br>[1:3] Y. Vertessen (58')<br>[2:4] D. Doekhi (88')" },
-            { date: "23.08.2026", time: "15:30", home: "VfB Krieschow", away: "1. FSV Mainz 05", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] J. Lee (11')<br>[0:2] A. Sieb (33')<br>[0:3] A. Sieb (52')<br>[0:4] A. Sieb (67')<br>[0:5] N. Amiri (82')" },
-            { date: "23.08.2026", time: "15:30", home: "Bahlinger SC", away: "1. FC Magdeburg", homeScore: 0, awayScore: 4, isFinished: true, homeScorers: "", awayScorers: "[0:1] M. Kaars (19')<br>[0:2] M. Kaars (42')<br>[0:3] B. Atik (60')<br>[0:4] L. El Hankouri (85')" },
-            { date: "23.08.2026", time: "18:00", home: "Rot-Weiss Essen", away: "FC St. Pauli", homeScore: 2, awayScore: 0, isFinished: true, homeScorers: "[1:0] M. Voufack (42')<br>[2:0] J. Safi (79')", awayScorers: "" },
-            { date: "23.08.2026", time: "18:00", home: "1. FC Phönix Lübeck", away: "SC Paderborn", homeScore: 2, awayScore: 4, isFinished: true, homeScorers: "[1:1] V. Ilidio (30')<br>[2:3] J. Berger (64')", awayScorers: "[0:1] S. Michel (12')<br>[1:2] K. Klaas (45')<br>[1:3] F. Bilbija (58')<br>[2:4] A. Grimaldi (88')" },
-            { date: "23.08.2026", time: "18:00", home: "Fortuna Düsseldorf", away: "SC Freiburg", homeScore: 1, awayScore: 5, isFinished: true, homeScorers: "[1:1] D. Kownacki (15')", awayScorers: "[0:1] V. Grifo (22')<br>[1:2] V. Grifo (48')<br>[1:3] L. Höler (60')<br>[1:4] M. Eggestein (74')<br>[1:5] J. Adamu (89')" },
-            { date: "24.08.2026", time: "18:00", home: "VSG Altglienicke", away: "VfL Wolfsburg", homeScore: 3, awayScore: 4, isFinished: true, homeScorers: "[1:0] P. Breitkreuz (18')<br>[2:2] C. Manske (45')", awayScorers: "[1:1] L. Nmecha (25')<br>[1:2] J. Wind (38')<br>[2:3] M. Amoura (62')<br>[3:4] P. Wimmer (88')" },
-            { date: "24.08.2026", time: "18:00", home: "SC Verl", away: "Hamburger SV", homeScore: 0, awayScore: 3, isFinished: true, homeScorers: "", awayScorers: "[0:1] R. Königsdörffer (14')<br>[0:2] D. Selke (52')<br>[0:3] I. Pherai (80')" },
-            { date: "24.08.2026", time: "18:00", home: "Würzburger Kickers", away: "1. FC Köln", homeScore: 1, awayScore: 2, isFinished: true, homeScorers: "[1:2] S. Hägele (66')", awayScorers: "[0:1] D. Huseinbasic (20')<br>[0:2] T. Lemperle (45')" },
-            { date: "24.08.2026", time: "20:45", home: "Hallescher FC", away: "FC Schalke 04", homeScore: 2, awayScore: 5, isFinished: true, homeScorers: "[1:1] J. Wolf (33')<br>[2:4] T. Berger (78')", awayScorers: "[0:1] K. Karaman (10')<br>[1:2] M. Sylla (41')<br>[1:3] M. Sylla (55')<br>[1:4] T. Mohr (68')<br>[2:5] E. Aydın (89')" },
-            { date: "01.09.2026", time: "20:45", home: "HEBC Hamburg", away: "Borussia Dortmund", homeScore: 0, awayScore: 5, isFinished: true, homeScorers: "", awayScorers: "[0:1] S. Guirassy (15')<br>[0:2] S. Guirassy (38')<br>[0:3] K. Adeyemi (50')<br>[0:4] D. Malen (72')<br>[0:5] J. Brandt (86')" },
-            { date: "02.09.2026", time: "20:45", home: "VfL Osnabrück", away: "FC Bayern München", homeScore: 1, awayScore: 4, isFinished: true, homeScorers: "[1:3] E. Engelhardt (72')", awayScorers: "[0:1] H. Kane (12')<br>[0:2] H. Kane (30')<br>[0:3] M. Olise (55')<br>[1:4] J. Musiala (84')" }
-        ],
-        2: [
-            { date: "27.10.2026", time: "18:00", home: "Rot-Weiss Essen", away: "RB Leipzig", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "18:00", home: "Hamburger SV", away: "Eintracht Frankfurt", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "18:00", home: "SG Sonnenhof Großaspach", away: "FC Augsburg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "18:00", home: "VfL Bochum", away: "1. FSV Mainz 05", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "20:45", home: "Borussia Mönchengladbach", away: "Karlsruher SC", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "20:45", home: "1. FC Köln", away: "1. FC Union Berlin", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "20:45", home: "Borussia Dortmund", away: "SV Werder Bremen", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "27.10.2026", time: "20:45", home: "SV Elversberg", away: "SV Darmstadt 98", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "18:00", home: "Dynamo Dresden", away: "FC Schalke 04", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "18:00", home: "SSV Jeddeloh", away: "Hertha BSC", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "18:00", home: "SC Paderborn 07", away: "VfB Stuttgart", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "18:00", home: "SC Freiburg", away: "VfL Wolfsburg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "20:45", home: "Holstein Kiel", away: "TSG Hoffenheim", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "20:45", home: "Hannover 96", away: "1. FC Kaiserslautern", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "20:45", home: "Bayer Leverkusen", away: "1. FC Nürnberg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" },
-            { date: "28.10.2026", time: "20:45", home: "FC Bayern München", away: "1. FC Magdeburg", homeScore: null, awayScore: null, isFinished: false, homeScorers: "", awayScorers: "" }
-        ],
+    // Definiere die offiziellen Spieltage / Datumswerte für die Runden zur Abfrage über ESPN
+    const roundDatesMap = {
+        1: ["20260821", "20260822", "20260823", "20260824", "20260901", "20260902"],
+        2: ["20261027", "20261028"], // Termine der 2. Hauptrunde (Okt 2026)
+        3: [],
+        4: [],
+        5: [],
+        6: []
+    };
+
+    // Die Spieldaten werden hier dynamisch von ESPN geladen
+    let pokalMatchesByRound = {
+        1: [],
+        2: [],
         3: [],
         4: [],
         5: [],
@@ -808,6 +765,22 @@
         }
     }
 
+    // Funktion zum Eintragen von Live-Toren in deine Supabase-Tabelle (z.B. sent_goals_dfb oder ähnlich)
+    async function logGoalToSupabase(matchInfo, scorer, score) {
+        try {
+            await supabaseClient.from('sent_goals_dfb').insert([
+                {
+                    match: matchInfo,
+                    goal_scorer: scorer,
+                    score: score,
+                    created_at: new Date()
+                }
+            ]);
+        } catch (err) {
+            console.log("Fehler beim Speichern des Tores in Supabase:", err);
+        }
+    }
+
     async function sendTestPush() {
         await sendPushNotification("⚽ DFB-Pokal Test-Tor-Alarm!", "Das Test-Tor für den DFB-Pokal wurde erfolgreich ausgelöst!");
         alert("Test-Push erfolgreich ausgelöst!");
@@ -815,7 +788,8 @@
 
     async function simulateLiveGoal() {
         await sendPushNotification("⚽ DFB-Pokal TOR!", "Bayer Leverkusen vs. 1. FC Nürnberg — Tor für Leverkusen (Schick 43')!");
-        alert("Simuliertes Live-Tor mit Torschütze als Push gesendet!");
+        await logGoalToSupabase("Bayer Leverkusen vs. 1. FC Nürnberg", "Patrick Schick (43')", "1:0");
+        alert("Simuliertes Live-Tor in Supabase eingetragen & Push gesendet!");
     }
 
     function toggleAdminMode() {
@@ -836,7 +810,7 @@
 
     function loadPokalData(showAlert = false) {
         fetchLiveScores();
-        if (showAlert) alert("Daten aktualisiert!");
+        if (showAlert) alert("Daten von ESPN aktualisiert!");
     }
 
     function switchRound(roundId, btnElement) {
@@ -844,112 +818,126 @@
         document.querySelectorAll('.round-btn').forEach(b => b.classList.remove('active'));
         if (btnElement) btnElement.classList.add('active');
         document.getElementById('roundTableHeader').textContent = (roundTitles[roundId] || 'Runde ' + roundId) + ' — Spiele & Ergebnisse';
-        renderMatches();
-        updateTicker();
+        
+        fetchLiveScores();
     }
 
+    // VOLLSTÄNDIGE DATENABFRAGE VON ESPN FÜR DIE AKTIVE RUNDE
     async function fetchLiveScores() {
         try {
-            const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/ger.dfb_pokal/scoreboard');
-            const data = await response.json();
+            let dates = roundDatesMap[currentRoundId] || [];
             let hasLiveGames = false;
             latestLiveGoalsTicker = [];
 
-            if (data && data.events) {
-                data.events.forEach(event => {
-                    const statusType = event.status.type.state;
-                    if (statusType !== 'in' && statusType !== 'post') return;
+            if (dates.length === 0) {
+                pokalMatchesByRound[currentRoundId] = [];
+                renderMatches();
+                renderTopScorers();
+                updateTicker();
+                return;
+            }
 
-                    const comp = event.competitions[0];
-                    const homeTeam = comp.competitors.find(c => c.homeAway === 'home');
-                    const awayTeam = comp.competitors.find(c => c.awayAway === 'away');
-                    
-                    const hName = homeTeam.team.displayName;
-                    const aName = awayTeam.team.displayName;
-                    const hScore = parseInt(homeTeam.score);
-                    const aScore = parseInt(awayTeam.score);
+            let loadedMatches = [];
 
-                    if (isNaN(hScore) || isNaN(aScore)) return;
+            for (let d of dates) {
+                const response = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/ger.dfb_pokal/scoreboard?dates=${d}`);
+                const data = await response.json();
 
-                    let displayClock = event.status?.displayClock || "";
-                    let homeEventsList = [];
-                    let awayEventsList = [];
+                if (data && data.events) {
+                    data.events.forEach(event => {
+                        const comp = event.competitions[0];
+                        const homeTeam = comp.competitors.find(c => c.homeAway === 'home');
+                        const awayTeam = comp.competitors.find(c => c.homeAway === 'away');
+                        
+                        const hName = homeTeam.team.displayName;
+                        const aName = awayTeam.team.displayName;
+                        const hScore = homeTeam.score !== undefined ? parseInt(homeTeam.score) : null;
+                        const aScore = awayTeam.score !== undefined ? parseInt(awayTeam.score) : null;
+                        
+                        const statusType = event.status.type.state; // 'pre', 'in', 'post'
+                        let isFinished = (statusType === 'post');
+                        let isLive = (statusType === 'in');
+                        if (isLive) hasLiveGames = true;
 
-                    if (comp.details && comp.details.length > 0) {
-                        comp.details.forEach(d => {
-                            let typeText = (d.type && d.type.text) ? d.type.text.toLowerCase() : "";
-                            let playerName = d.athletesInvolved?.[0]?.displayName || d.player?.displayName || d.athlete?.displayName || '';
-                            let minute = d.clock?.displayValue ? ` (${d.clock.displayValue}')` : '';
+                        let displayClock = event.status?.displayClock || "";
+                        let dateObj = new Date(event.date);
+                        let dateStr = dateObj.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        let timeStr = dateObj.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
 
-                            if (d.scoringPlay || typeText.includes("goal")) {
-                                if (playerName) {
-                                    let goalStr = `⚽ ${playerName}${minute}`;
-                                    if (d.team?.id === homeTeam.team.id) {
-                                        homeEventsList.push(goalStr);
-                                        if (statusType === 'in') {
-                                            let isBayern = hName.includes("Bayern") || aName.includes("Bayern");
-                                            let hl = isBayern ? ' ticker-highlight-bayern' : '';
-                                            latestLiveGoalsTicker.push(`<span class="ticker-item${hl}">⚽ ${hName}: ${playerName} ${minute} <span>${hName} ${hScore}:${aScore} ${aName}</span></span>`);
-                                        }
-                                    } else {
-                                        awayEventsList.push(goalStr);
-                                        if (statusType === 'in') {
-                                            let isBayern = hName.includes("Bayern") || aName.includes("Bayern");
-                                            let hl = isBayern ? ' ticker-highlight-bayern' : '';
-                                            latestLiveGoalsTicker.push(`<span class="ticker-item${hl}">⚽ ${aName}: ${playerName} ${minute} <span>${hName} ${hScore}:${aScore} ${aName}</span></span>`);
+                        let homeEventsList = [];
+                        let awayEventsList = [];
+
+                        if (comp.details && comp.details.length > 0) {
+                            comp.details.forEach(det => {
+                                let typeText = (det.type && det.type.text) ? det.type.text.toLowerCase() : "";
+                                let playerName = det.athletesInvolved?.[0]?.displayName || det.player?.displayName || det.athlete?.displayName || '';
+                                let minute = det.clock?.displayValue ? ` (${det.clock.displayValue}')` : '';
+
+                                if (det.scoringPlay || typeText.includes("goal")) {
+                                    if (playerName) {
+                                        let goalStr = `⚽ ${playerName}${minute}`;
+                                        if (det.team?.id === homeTeam.team.id) {
+                                            homeEventsList.push(goalStr);
+                                            if (isLive) {
+                                                let isBayern = hName.includes("Bayern") || aName.includes("Bayern");
+                                                let hl = isBayern ? ' ticker-highlight-bayern' : '';
+                                                latestLiveGoalsTicker.push(`<span class="ticker-item${hl}">⚽ ${hName}: ${playerName} ${minute} <span>${hName} ${hScore}:${aScore} ${aName}</span></span>`);
+                                            }
+                                        } else {
+                                            awayEventsList.push(goalStr);
+                                            if (isLive) {
+                                                let isBayern = hName.includes("Bayern") || aName.includes("Bayern");
+                                                let hl = isBayern ? ' ticker-highlight-bayern' : '';
+                                                latestLiveGoalsTicker.push(`<span class="ticker-item${hl}">⚽ ${aName}: ${playerName} ${minute} <span>${hName} ${hScore}:${aScore} ${aName}</span></span>`);
+                                            }
                                         }
                                     }
                                 }
-                            }
+                            });
+                        }
+
+                        let matchKey = `${hName}-${aName}`;
+                        let newTotal = (hScore !== null && !isNaN(hScore) ? hScore : 0) + (aScore !== null && !isNaN(aScore) ? aScore : 0);
+                        let oldTotal = previousScores[matchKey] !== undefined ? previousScores[matchKey] : newTotal;
+
+                        if (isLive && newTotal > oldTotal) {
+                            let pushBody = `${hName} vs. ${aName} — Neuer Spielstand: ${hScore}:${aScore}`;
+                            sendPushNotification("⚽ DFB-Pokal TOR!", pushBody);
+                            logGoalToSupabase(`${hName} vs. ${aName}`, "Live Tor", `${hScore}:${aScore}`);
+                        }
+                        previousScores[matchKey] = newTotal;
+
+                        loadedMatches.push({
+                            date: dateStr,
+                            time: timeStr,
+                            home: hName,
+                            away: aName,
+                            homeScore: hScore,
+                            awayScore: aScore,
+                            homeScorers: homeEventsList.join('<br>'),
+                            awayScorers: awayEventsList.join('<br>'),
+                            isFinished: isFinished,
+                            isLive: isLive,
+                            displayClock: displayClock
                         });
-                    }
-
-                    for (let rId in pokalMatchesByRound) {
-                        pokalMatchesByRound[rId].forEach(m => {
-                            if (m.home.toLowerCase().includes(hName.toLowerCase().substring(0, 5)) || hName.toLowerCase().includes(m.home.toLowerCase().substring(0, 5))) {
-                                let matchKey = `${m.home}-${m.away}`;
-                                let oldTotal = previousScores[matchKey] !== undefined ? previousScores[matchKey] : (m.homeScore || 0) + (m.awayScore || 0);
-                                let newTotal = hScore + aScore;
-
-                                m.homeScore = hScore;
-                                m.awayScore = aScore;
-                                m.displayClock = displayClock;
-
-                                if (homeEventsList.length > 0) m.homeScorers = homeEventsList.join('<br>');
-                                if (awayEventsList.length > 0) m.awayScorers = awayEventsList.join('<br>');
-
-                                if (statusType === 'post') m.isFinished = true;
-                                if (statusType === 'in') {
-                                    hasLiveGames = true;
-                                    m.isLive = true;
-                                }
-
-                                if (statusType === 'in' && newTotal > oldTotal) {
-                                    let pushBody = `${m.home} vs. ${m.away} — Neuer Spielstand: ${hScore}:${aScore}`;
-                                    sendPushNotification("⚽ DFB-Pokal TOR!", pushBody);
-                                }
-                                previousScores[matchKey] = newTotal;
-                            }
-                        });
-                    }
-                });
+                    });
+                }
             }
+
+            pokalMatchesByRound[currentRoundId] = loadedMatches;
 
             const liveBadge = document.getElementById('liveIndicatorBadge');
-            if (hasLiveGames) {
-                liveBadge.style.display = 'flex';
-            } else {
-                liveBadge.style.display = 'none';
-            }
+            if (liveBadge) liveBadge.style.display = hasLiveGames ? 'flex' : 'none';
+
         } catch (e) {
-            console.log("Live-Daten Abruf im Offline-Modus / Fallback aktiv");
+            console.log("Fehler beim Abrufen der ESPN-Daten:", e);
         }
+
         renderMatches();
         renderTopScorers();
         updateTicker();
     }
 
-    // TICKER AKTUALISIERUNG MIT BAYERN-HIGHLIGHT & DYNAMISCHEM LABEL
     function updateTicker() {
         let tickerItems = [];
         let labelText = "⚽ Ticker";
@@ -963,7 +951,7 @@
             labelText = `⚽ ${rTitle.toUpperCase()} (ERGEBNISSE)`;
 
             matches.forEach(m => {
-                let score = (m.homeScore !== null && m.homeScore !== undefined) ? `${m.homeScore}:${m.awayScore}` : 'vs';
+                let score = (m.homeScore !== null && m.homeScore !== undefined && !isNaN(m.homeScore)) ? `${m.homeScore}:${m.awayScore}` : 'vs';
                 let status = m.isLive ? '🔴 LIVE' : (m.isFinished ? 'Endstand' : m.time || '');
                 
                 let isBayern = m.home.includes("Bayern") || m.away.includes("Bayern");
@@ -1046,7 +1034,7 @@
         let matches = pokalMatchesByRound[currentRoundId] || [];
 
         if (matches.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">Für diese Runde sind noch keine Spiele angesetzt oder erfasst.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px;">Für diese Runde sind noch keine Spiele bei ESPN angesetzt.</td></tr>`;
             return;
         }
 
@@ -1119,9 +1107,7 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         loadPokalData();
-        renderTopScorers();
-        updateTicker();
-        setInterval(fetchLiveScores, 20000);
+        setInterval(fetchLiveScores, 30000);
     });
 </script>
 

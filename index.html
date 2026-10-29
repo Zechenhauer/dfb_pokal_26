@@ -663,7 +663,7 @@
 
 <script>
     const SUPABASE_URL = 'https://lhusylpjnujlqomougmg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxodXN5bHBqbnVqbHFvbW91Z21nIiwicm9sZSI6ImFub24iOjE3ODkwMzA0ODIsImV4cCI6MjEwNDYwNjQ4Mn0.9ugazAA5pEdy9uSaJQWa5BMb7EwSH9d-h5K8ln_PF5A';
+    const SUPABASE_ANON_KEY = 'sb_publishable_yXEueWILvAq-Vm2VfTuYyg_BIQeE1KK';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const ADMIN_PIN = "1919";
@@ -682,7 +682,6 @@
         6: []
     };
 
-    // Die Spieldaten werden hier dynamisch von ESPN geladen
     let pokalMatchesByRound = {
         1: [],
         2: [],
@@ -765,7 +764,7 @@
         }
     }
 
-    // Funktion zum Eintragen von Live-Toren in deine Supabase-Tabelle (z.B. sent_goals_dfb oder ähnlich)
+    // Funktion zum Eintragen von Live-Toren in deine sent_goals_dfb Tabelle
     async function logGoalToSupabase(matchInfo, scorer, score) {
         try {
             await supabaseClient.from('sent_goals_dfb').insert([
@@ -822,7 +821,6 @@
         fetchLiveScores();
     }
 
-    // VOLLSTÄNDIGE DATENABFRAGE VON ESPN FÜR DIE AKTIVE RUNDE
     async function fetchLiveScores() {
         try {
             let dates = roundDatesMap[currentRoundId] || [];
@@ -854,7 +852,7 @@
                         const hScore = homeTeam.score !== undefined ? parseInt(homeTeam.score) : null;
                         const aScore = awayTeam.score !== undefined ? parseInt(awayTeam.score) : null;
                         
-                        const statusType = event.status.type.state; // 'pre', 'in', 'post'
+                        const statusType = event.status.type.state;
                         let isFinished = (statusType === 'post');
                         let isLive = (statusType === 'in');
                         if (isLive) hasLiveGames = true;

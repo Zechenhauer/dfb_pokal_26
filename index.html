@@ -745,11 +745,11 @@
         }
     }
 
-    // KORRIGIERT: Übermittelt jetzt exakt 'push_subscriptions_dfb' an die Edge Function!
     async function sendPushNotification(title, body) {
+        console.log("Sende Push an Supabase...", title, body);
         try {
             const targetUrl = SUPABASE_URL + '/functions/v1/send-push';
-            await fetch(targetUrl, {
+            const response = await fetch(targetUrl, {
                 method: 'POST',
                 mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
@@ -759,8 +759,10 @@
                     body: body
                 })
             });
+            const result = await response.json();
+            console.log("Supabase Push Antwort:", result);
         } catch (e) {
-            console.error("Push Fehler:", e);
+            console.error("Fetch Push Fehler:", e);
         }
     }
 
@@ -780,14 +782,16 @@
     }
 
     async function sendTestPush() {
+        console.log("Test-Push Button geklickt!");
         await sendPushNotification("⚽ DFB-Pokal Test-Tor-Alarm!", "Das Test-Tor für den DFB-Pokal wurde erfolgreich ausgelöst!");
-        alert("Test-Push erfolgreich ausgelöst!");
+        alert("Test-Push Befehl gesendet. Schau in die Konsole (F12).");
     }
 
     async function simulateLiveGoal() {
+        console.log("Live-Tor simulieren Button geklickt!");
         await sendPushNotification("⚽ DFB-Pokal TOR!", "Bayer Leverkusen vs. 1. FC Nürnberg — Tor für Leverkusen (Schick 43')!");
         await logGoalToSupabase("Bayer Leverkusen vs. 1. FC Nürnberg", "Patrick Schick (43')", "1:0");
-        alert("Simuliertes Live-Tor in Supabase eingetragen & Push gesendet!");
+        alert("Simuliertes Live-Tor gesendet. Schau in die Konsole (F12).");
     }
 
     function toggleAdminMode() {
